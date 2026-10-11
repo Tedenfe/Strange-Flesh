@@ -1,0 +1,17 @@
+[
+  {"code":"ga", "name":"Gaeilge"},
+  {"code":"it", "name":"Italiano"},
+  {"code":"de", "name":"Deutsch"},
+  {"code":"fr", "name":"Français"},
+  {"code":"pl", "name":"Polski"},
+  {"code":"ru", "name":"Русский"},
+  {"code":"zh-Hant", "name":"繁體中文"},
+  {"code":"zh-Hans", "name":"简体中文"},
+  {"code":"ja", "name":"日本語"},
+  {"code":"ko", "name":"한국어"},
+  {"code":"es", "name":"Español (España)"},
+  {"code":"es-419", "name":"Español (Latinoamérica)"},
+  {"code":"pt-PT", "name":"Português (Portugal)"},
+  {"code":"tr", "name":"Türkçe"},
+  {"code":"uk", "name":"Українська"}
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "file": "alagard-unicode/alagard-12px-unicode.ttf",
+    "source": "https://fontstruct.com/fontstructions/show/1035837",
+    "downloaded": "2026-10-11",
+    "provided_archive": "alagard-12px-unicode.ttf.zip",
+    "author": "iosoftware",
+    "license": "CC BY 3.0",
+    "sha256": "f615741b07dd52fdb1779f460db4c26f785eab46b7c0bc7bd91c988afe2dfde0",
+    "bytes": 134568
+  },
+  {
+    "file": "NotoSans.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf",
+    "downloaded": "2026-10-11",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+    "bytes": 2049096
+  },
+  {
+    "file": "NotoSansCJK-Regular.otf",
+    "source": "https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+    "downloaded": "2026-10-11",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+    "bytes": 16437364
+  }
+]

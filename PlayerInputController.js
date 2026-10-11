@@ -24,11 +24,11 @@ function PlayerInputController()
 	this.downButtonMonitor = new GamepadButtonMonitor(0, 13, this, 0, PlayerInputController.prototype.downKeyUp, PlayerInputController.prototype.downKeyDown );
 	this.leftButtonMonitor = new GamepadButtonMonitor(0, 14, this, 0, PlayerInputController.prototype.leftKeyUp, PlayerInputController.prototype.leftKeyDown );
 	this.rightButtonMonitor = new GamepadButtonMonitor(0, 15, this, 0, PlayerInputController.prototype.rightKeyUp, PlayerInputController.prototype.rightKeyDown );
-	this.punchButtonMonitor = new GamepadButtonMonitor(0, 0, this, 0, PlayerInputController.prototype.punchKeyUp, PlayerInputController.prototype.punchKeyDown );
+	this.punchButtonMonitor = new GamepadButtonMonitor(0, 2, this, 0, PlayerInputController.prototype.punchKeyUp, PlayerInputController.prototype.punchKeyDown );
 	this.smokeButtonMonitor = new GamepadButtonMonitor(0, 1, this, 0, PlayerInputController.prototype.smokeKeyUp, PlayerInputController.prototype.smokeKeyDown );
-	this.grabButtonMonitor = new GamepadButtonMonitor(0, 2, this, 0, PlayerInputController.prototype.grabKeyUp, PlayerInputController.prototype.grabKeyDown );
+	this.grabButtonMonitor = new GamepadButtonMonitor(0, 3, this, 0, PlayerInputController.prototype.grabKeyUp, PlayerInputController.prototype.grabKeyDown );
 	this.specialButtonMonitor = new GamepadButtonMonitor(0, 4, this, 0, PlayerInputController.prototype.specialKeyUp, PlayerInputController.prototype.specialKeyDown );
-	this.jumpButtonMonitor = new GamepadButtonMonitor(0, 3, this, 0, PlayerInputController.prototype.jumpKeyUp, PlayerInputController.prototype.jumpKeyDown );
+	this.jumpButtonMonitor = new GamepadButtonMonitor(0, 0, this, 0, PlayerInputController.prototype.jumpKeyUp, PlayerInputController.prototype.jumpKeyDown );
 	this.startButtonMonitor = new GamepadButtonMonitor(0, 9, this, 0, PlayerInputController.prototype.startKeyUp, PlayerInputController.prototype.startKeyDown );
 	//this.resetBindings();
 	
@@ -54,11 +54,11 @@ PlayerInputController.prototype.resetBindings = function()
     this.downButtonMonitor.SetConfig([0, 13, 0]);
     this.leftButtonMonitor.SetConfig([0, 14, 0]);
     this.rightButtonMonitor.SetConfig([0, 15, 0]);
-    this.punchButtonMonitor.SetConfig([0, 0, 0 ]);
+    this.punchButtonMonitor.SetConfig([0, 2, 0 ]);
     this.smokeButtonMonitor.SetConfig([0, 1, 0 ]);
-    this.grabButtonMonitor.SetConfig([0, 2, 0 ]);
+    this.grabButtonMonitor.SetConfig([0, 3, 0 ]);
     this.specialButtonMonitor.SetConfig([0, 4, 0 ]);
-    this.jumpButtonMonitor.SetConfig([0, 3, 0 ]);
+    this.jumpButtonMonitor.SetConfig([0, 0, 0 ]);
     this.startButtonMonitor.SetConfig([0, 9, 0 ]);
 
 	saveSettings();
@@ -668,5 +668,4 @@ GamepadButtonMonitor.prototype.Update = function()
 var gamepadSupportAvailable = !!navigator.getGamepads;
 
 
-window.addEventListener("gamepadconnected", gamepadConnected);
-window.addEventListener("gamepaddisconnected", gamepadDisconnected);
+// GamepadSupport.js polls each frame, including connection changes.

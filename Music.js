@@ -41,14 +41,14 @@ Music.prototype.play = function(delay, fadeIn)
 		
 		var startTime = audioContext.currentTime + delay;
 		var stopTime = startTime + fadeIn;
-		if (fadeIn > 0)
+		if (fadeIn > 0 && this.volume > 0 && !this.muted)
 		{
 			this.destination.gain.setValueAtTime(0.001, audioContext.currentTime);
 			this.destination.gain.exponentialRampToValueAtTime(this.volume, stopTime);
 		}
 		else
 		{
-			this.destination.gain.value = this.volume;
+			this.destination.gain.value = this.muted ? 0 : this.volume;
 		}
 		
 		this.playing = true;
@@ -69,7 +69,7 @@ Music.prototype.stop = function(fadeOut, delay)
 		{
 			var fadeTime = audioContext.currentTime + delay;
 			var stopTime = fadeTime + fadeOut;
-			if (fadeOut > 0)
+			if (fadeOut > 0 && this.volume > 0 && !this.muted)
 			{
 				this.destination.gain.setValueAtTime(this.volume, fadeTime);
 				this.destination.gain.exponentialRampToValueAtTime(0.001, stopTime);
@@ -120,6 +120,8 @@ Music.prototype.setVolume = function(volume, delay)
 		
 		if (this.destination != null)
 		{
+            // Keep a scheduled fade from restoring volume after muting.
+            this.destination.gain.cancelScheduledValues(audioContext.currentTime + delay);
 			if (this.muted)
 			{
 				this.destination.gain.setValueAtTime(0, audioContext.currentTime + delay);

@@ -54,6 +54,8 @@ function makeCanvasGrayscale(canvas)
 
 function drawTextWithShadow(text, x, y, color)
 {
+    text = localize(text);
+    ctx.font = ctx.font.replace(/alagard.*$/, Localization.font("alagard"));
 	if (typeof color === "undefined" )
 		color = "#FFF";
 		
@@ -71,6 +73,8 @@ function drawTextWithShadow(text, x, y, color)
 
 function drawTextWithOutline(text, x, y, color)
 {
+    text = localize(text);
+    ctx.font = ctx.font.replace(/alagard.*$/, Localization.font("alagard"));
 	if (typeof color === "undefined" )
 		color = "#FFF";
 		

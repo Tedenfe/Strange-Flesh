@@ -458,7 +458,7 @@ function AudioResource(key, src, samples)
 	this.data = null;
 	this.buffer = null;
 	this.destination = audioContext.createGain();
-	this.destination.connect(audioContext.destination);
+	this.destination.connect(GlobalResourceLoader.sfxGain);
 	this.destination.gain.value = 1.0;
 	this.request = new XMLHttpRequest();
 	
@@ -610,8 +610,6 @@ AudioResource.prototype.Play = function(volume, delay)
 		volume = 0;
 	}
 	
-	volume *= settings.baseSFXBoost;
-	
 	var startPoint = 0;
 	if (delay < 0)
 	{
@@ -649,6 +647,9 @@ AudioResource.prototype.isReady = function()
  
 function ResourceLoader() 
 {
+	this.sfxGain = audioContext.createGain();
+	this.sfxGain.connect(audioContext.destination);
+	this.sfxGain.gain.value = 1.0;
 	this.images = [];
 	this.sounds = [];
 	this.fonts = [];
@@ -668,40 +669,36 @@ function ResourceLoader()
 	
 	this.errorMessages = [];
 	
-	this.iOS = true;
-	this.webAudioLocked = !(typeof(process) != "undefined" && process.versions.electron);
+	this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+    this.webAudioLocked = audioContext.state !== "running";
+    var loader = this;
+    var canvas = document.getElementById("gameCanvas");
+    var completed = false;
+    function audioUnlocked() {
+        if (completed || audioContext.state !== "running") return;
+        completed = true;
+        loader.webAudioLocked = false;
+        canvas.removeEventListener("click", loader.unlockAudio);
+        canvas.removeEventListener("touchend", loader.unlockAudio);
+        document.removeEventListener("keydown", loader.unlockAudio);
+        if (typeof c !== "undefined" && c && typeof enableTouchInput === "function") enableTouchInput();
+    }
+    this.unlockAudio = function() {
+        if (audioContext.state === "running") audioUnlocked();
+        else if (audioContext.resume) audioContext.resume().then(audioUnlocked).catch(function() {});
+    };
+    if (this.webAudioLocked) {
+        canvas.addEventListener("click", this.unlockAudio, false);
+        canvas.addEventListener("touchend", this.unlockAudio, false);
+        document.addEventListener("keydown", this.unlockAudio, false);
+        // This succeeds at startup when the browser already permits autoplay.
+        this.unlockAudio();
+    }
 	
-	if (this.iOS)
-	{
-		var gain = audioContext.createGain();
-		
-		var canvas = document.getElementById("gameCanvas");
-		var webAudioUnlocker = null; 
-		webAudioUnlocker = function() {
+};
 
-			// create empty buffer
-			var buffer = audioContext.createBuffer(1, 4800, 48000);
-			var source = audioContext.createBufferSource();
-			source.buffer = buffer;
-
-			// connect to output (your speakers)
-			source.connect(audioContext.destination);
-			
-			source.onended = function() {
-					canvas.removeEventListener('click', webAudioUnlocker);
-					canvas.removeEventListener('touchend', webAudioUnlocker);
-					GlobalResourceLoader.webAudioLocked = false;
-					enableTouchInput();
-				};
-
-			// play the file
-			source.start();
-			//GlobalResourceLoader.webAudioLocked = false;
-		};
-		canvas.addEventListener('click', webAudioUnlocker, false);
-		canvas.addEventListener('touchend', webAudioUnlocker, false);
-	}
-	
+ResourceLoader.prototype.SetSFXVolume = function(volume) {
+    this.sfxGain.gain.setValueAtTime(Math.max(0, Math.min(1, Number(volume) || 0)), audioContext.currentTime);
 };
 
 ResourceLoader.prototype.LoadAll = function() 
@@ -1030,18 +1027,18 @@ ResourceLoader.prototype.Draw = function()
 		
 			if (this.GetFont("alagard").loaded)
 			{
-				ctx.font = "16px alagard";
+				ctx.font = "16px " + Localization.font("alagard");
 			}
 			else
 			{
 				ctx.font = "12px \"Lucida Console\"";
 			}
 			
-			ctx.fillText("Well, shit.",320,157);
-			ctx.fillText("No game for you I guess.",320,180);
+			ctx.fillText(localize("Well, shit."),320,157);
+			ctx.fillText(localize("No game for you I guess."),320,180);
 			if (this.GetFont("alagard").loaded)
 			{
-				ctx.font = "10px alagard";
+				ctx.font = "10px " + Localization.font("alagard");
 			}
 			else
 			{
@@ -1065,21 +1062,21 @@ ResourceLoader.prototype.Draw = function()
 			
 			if (this.GetFont("alagard").loaded)
 			{
-				ctx.font = "20px alagard";
+				ctx.font = "20px " + Localization.font("alagard");
 			}
 			else
 			{
 				ctx.font = "14px \"Lucida Console\"";
 			}
 			
-			ctx.fillText("Getting Stranger...",320,180);
+			ctx.fillText(localize("Getting Stranger..."),320,180);
 			
 			if (this.iOS && this.loadPercentage > 99)
 			{
 				if (this.webAudioLocked)
-					ctx.fillText("Tap to Start", 320, 180 + 16);
+					ctx.fillText(localize("Tap to Start"), 320, 180 + 16);
 				else
-					ctx.fillText("Starting...", 320, 180 + 16);
+					ctx.fillText(localize("Starting..."), 320, 180 + 16);
 			}
 			else
 			{
@@ -1088,7 +1085,7 @@ ResourceLoader.prototype.Draw = function()
 			
 			if (this.GetFont("alagard").loaded)
 			{
-				ctx.font = "14px alagard";
+				ctx.font = "14px " + Localization.font("alagard");
 			}
 			else
 			{

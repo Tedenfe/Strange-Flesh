@@ -1,0 +1,70 @@
+name: Windows release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: python tools/build-locales.py
+      - run: python tools/check-font.py
+      - run: npm test
+      - name: Validate release files and tag
+        shell: pwsh
+        run: |
+          $releaseVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne "v$releaseVersion") { throw 'Tag and package version differ' }
+          if (!(Test-Path "releases/v$releaseVersion.md")) { throw 'Missing release summary' }
+          if (!(Test-Path CHANGELOG.txt)) { throw 'Missing complete changelog' }
+      - run: npm run build:windows
+      - run: npm run verify:bundle
+      - name: Verify packaged runtime without opening a game window
+        shell: pwsh
+        run: |
+          $reportPath = Join-Path $pwd 'dist/runtime-verification.json'
+          $application = Start-Process -FilePath '.\dist\win-unpacked\Strange Flesh.exe' -ArgumentList @('--verify-install',('"' + $reportPath + '"')) -WindowStyle Hidden -PassThru -Wait
+          if ($application.ExitCode -ne 0 -or !(Test-Path $reportPath)) { throw 'Packaged runtime verification failed' }
+          $report = Get-Content $reportPath -Raw | ConvertFrom-Json
+          if (!$report.gameRouteVerified -or !$report.setupRouteVerified -or !$report.fontRouteVerified -or !$report.privateRouteBlocked) { throw 'Resource routes failed verification' }
+      - name: Prepare downloads
+        shell: pwsh
+        run: |
+          Copy-Item CHANGELOG.txt dist/CHANGELOG.txt
+          $releaseFiles = Get-ChildItem dist -File | Where-Object { $_.Extension -eq '.exe' -or $_.Name -eq 'CHANGELOG.txt' }
+          $hashLines = foreach ($releaseFile in $releaseFiles) { "$( (Get-FileHash -LiteralPath $releaseFile.FullName -Algorithm SHA256).Hash.ToLower() )  $($releaseFile.Name)" }
+          [IO.File]::WriteAllText((Join-Path $pwd 'dist/SHA256SUMS.txt'), ($hashLines -join "`n") + "`n")
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-downloads
+          path: |
+            dist/*.exe
+            dist/CHANGELOG.txt
+            dist/SHA256SUMS.txt
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Windows-downloads
+          path: downloads
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" downloads/* --verify-tag --title "Strange Flesh $GITHUB_REF_NAME" --notes-file "releases/$GITHUB_REF_NAME.md"

@@ -172,6 +172,9 @@ function include(url)
 
 // Now use that function to include other files we want.
 // It's almost like using a non-shitty language!
+include("locales/pt-BR.js");
+include("Localization.js");
+include("locales/catalogs.js");
 include("Font.js");
 include("FileSaver.js");
 include("ResourceLoader.js"); // Load this guy first, it creates GlobalResourceLoader

@@ -1,3 +1,5 @@
+@import url("fonts/fonts.css");
+
 body 
 {
    background: #000000;
@@ -17,6 +19,8 @@ body
 
 .gameCanvas
 {
+	outline: none;
+	touch-action: none;
 	position: fixed;
 	display: block;
 	border-radius:15px;

@@ -1,0 +1,65 @@
+{
+  "name": "strange-flesh",
+  "version": "1.5.1",
+  "description": "Strange Flesh multilingual edition with controller support",
+  "author": "Tedenfe; original game by Greatest Bear Studios",
+  "license": "CC-BY-NC-SA-4.0",
+  "private": true,
+  "main": "desktop/main.js",
+  "scripts": {
+    "start": "node node_modules/electron/install.js && electron .",
+    "test": "node --test tests/*.test.js",
+    "build:windows": "electron-builder --win portable --x64 --publish never",
+    "verify:bundle": "node tools/verify-bundle.js"
+  },
+  "dependencies": {
+    "yauzl": "3.4.0"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.0.1",
+    "electron": "44.7.0",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "io.github.tedenfe.strangeflesh",
+    "productName": "Strange Flesh",
+    "artifactName": "Strange-Flesh-${version}-Windows-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "*.js",
+      "*.html",
+      "*.css",
+      "License.txt",
+      "UPSTREAM-README.md",
+      "README.md",
+      "CHANGELOG.txt",
+      "levels/**/*",
+      "locales/**/*",
+      "fonts/**/*",
+      "desktop/**/*",
+      "game/**/*",
+      "!game/images/**/*",
+      "!game/sound/**/*",
+      "!images/**/*",
+      "!sound/**/*",
+      "!**/fonts/PixelifySans.ttf",
+      "!**/fonts/OFL.txt"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "requestExecutionLevel": "user"
+    }
+  }
+}

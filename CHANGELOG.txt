@@ -1,0 +1,152 @@
+STRANGE FLESH - MULTILINGUAL EDITION
+Complete changelog for v1.5.1
+Release date: 2026-10-12
+Repository: https://github.com/Tedenfe/Strange-Flesh
+Original game: Greatest Bear Studios, 2017
+
+This release collects the changes made for the multilingual/controller edition
+on top of the fork's existing v1.5 game code. It does not change the game's story,
+levels, character art, or recorded dialogue.
+
+LANGUAGES AND TRANSLATION
+- Added Brazilian Portuguese throughout the game.
+- Added Irish, Italian, German, French, Polish, Russian, Traditional Chinese,
+  Simplified Chinese, Japanese, Korean, Spanish (Spain), Spanish (Latin America),
+  Portuguese (Portugal), Turkish, and Ukrainian. English remains available.
+- Added 425 translated source strings per catalog, covering title, pause,
+  settings, controls, loading, save notifications, locations, story captions,
+  endings, game-over text, credit headings, enemy names and object names.
+- Added a native-name language selector inside Settings. Removed the duplicate
+  selector from the main menu. Language changes apply immediately and are saved.
+- Completed previously missing translations for the Innermost Desires boss
+  announcement, randomized Joe names, descriptive enemy names, objects loaded
+  from level files, and parts of the credits.
+- Translated the Sound, Code, and Art headings baked into the credit images by
+  drawing localized headings over the original title band. Kept contributor
+  names and the original English artwork intact.
+- Kept character and contributor proper names where appropriate.
+- Preserved cutscene typewriter progress and completed captions when switching
+  languages. Newly introduced strings fall back to English until translated.
+- Fit long translated menu labels, options, instructions, captions and enemy
+  names within their available drawing area.
+- Tagged the page and canvases with the selected language for CJK glyph shaping.
+- Added editable JSON catalogs, a language registry, and an offline catalog
+  generator with checks for missing keys, empty values and placeholders.
+- Added a separate localization preview page for enemy names, the boss title
+  and credit headings. Previewing does not alter saved game settings.
+
+FONTS
+- Retained the original Alagard for the original English game text.
+- Replaced the earlier Portuguese font choice with the supplied, unchanged
+  Alagard-12px-unicode font by iosoftware. European translations now retain
+  the Alagard style, including Portuguese accents.
+- Bundled Noto Sans as a fallback for Latin, Greek, Cyrillic and other supported
+  characters, and Noto Sans CJK as the primary face for Chinese, Japanese and
+  Korean. These fonts work offline and support future translation work.
+- Load the CJK font only when its declared Unicode ranges are needed.
+- Removed the unused Pixelify Sans files from distributed packages.
+- Included font attribution in the end credits, the original Alagard Unicode
+  archive notices, both Noto OFL notices, and a font source/checksum manifest.
+- Added a font preview page and character-map checks for the actual catalogs,
+  native language names, Portuguese accents and representative future scripts.
+
+CONTROLLERS AND INPUT
+- Added standard-mapped support for Xbox 360/One/Series, PlayStation DualShock 4
+  and DualSense, Nintendo Switch Pro, and compatible controllers recognized by
+  the browser or Windows. Generic controllers can use numbered button labels
+  and remapping.
+- Added automatic controller family labels and manual Xbox, PlayStation and
+  Nintendo label selection in Controls.
+- Added D-pad and analog-stick movement with selectable 15%, 25% and 40%
+  deadzones, plus button and analog-axis remapping.
+- Default physical layout: south button jumps/confirms, west attacks, east
+  smokes/goes back, north grabs, left shoulder performs the special, and
+  Start/Options/Menu/+ pauses or skips.
+- Select the first active controller even when it is not in slot zero.
+- Preserve existing saved custom bindings. New binds wait for the confirmation
+  button to be released before capturing input; Esc cancels binding.
+- Allow keyboard and controller input together without one input's release
+  canceling another held input. Keep keyboard aliases active until both release.
+- Release held input on disconnect or loss of focus. Require neutral controller
+  input after returning to the window to prevent accidental actions.
+- Handle unavailable or denied Gamepad API access and short/nonstandard devices.
+- Consume one-shot menu callbacks once and fit wide controller button prompts.
+
+SETTINGS AND AUDIO
+- Replaced Music Volume and SFX Volume choices with independent sliders with
+  11 internal positions, from 0 (mute) to 10 (maximum).
+- Show only the slider bars, with no numeric values or extra mute label.
+- Added Left/Right keyboard and controller adjustment, held-button repeat,
+  mouse dragging and touch dragging at the displayed canvas scale.
+- Clamp each slider at its ends rather than wrapping from mute to maximum.
+- Apply and save volume changes immediately. Existing Full/Half/Mute settings
+  map to 10/5/0.
+- Route SFX through one shared gain, so muting also silences effects already
+  playing. Removed duplicate SFX volume multiplication.
+- Cancel scheduled music volume ramps when muting and safely handle fades
+  starting or stopping at zero volume.
+- Attempt to resume browser audio at startup when autoplay is permitted, and
+  retain key/click/touch unlock listeners until audio actually starts.
+- Enable immediate title music in the desktop build without a browser gesture.
+- Keep browser behavior compatible with autoplay restrictions.
+
+TITLE SCREEN AND MENU
+- Restored the original single-line "Press Any Key" prompt, its position,
+  size, alignment and music-beat pulse. The prompt remains visible before the
+  first music beat, while muted, and while browser autoplay is blocked.
+- Keep the original menu activation behavior: a key/controller input opens
+  the menu; a click can unlock audio without adding a different title prompt.
+- Removed the added second line of audio instructions.
+- Fixed the browser Exit action when no desktop application object exists.
+- Updated the displayed version to v1.5.1.
+- Retained existing Render Mode and Scaling Quality behavior; documented what
+  Perfect/Rough/Blurry and Auto/Low/High do.
+
+WINDOWS RELEASES AND DISTRIBUTION
+- Added a portable Windows x64 executable build using Electron. No separate
+  Node.js installation or local web server is required for this build.
+- Added a first-launch media importer. Choose the original
+  Strange-Flesh-Media-v1.4.zip; the executable verifies its SHA-256 checksum,
+  extracts only images/audio/font media, and stores them in the user's cache.
+- Reuse imported media across executable updates. Settings and saves use a
+  stable application origin so updated versions retain desktop progress.
+- Keep the media ZIP, images and sounds out of the GitHub source and executable
+  release assets, following the upstream project's separate media distribution.
+- Reject unsafe ZIP paths and unsupported archive entries, bound extraction
+  size, stage imports before replacing the previous cache, and detect missing
+  or truncated cached files on startup.
+- Replace the old Electron remote-module integration with an isolated preload
+  bridge for fullscreen, window bounds and Exit. Disable renderer Node access
+  and restrict resource routes, navigation and native window permissions.
+- Support both the workspace's game/ layout and the repository's original flat
+  source layout in the relevant development and validation tools.
+- Add a version-tagged GitHub Actions workflow to validate source, build the
+  portable executable and publish a GitHub release with concise release notes.
+- Attach this full CHANGELOG.txt and a SHA-256 checksums file to the release.
+- Pin dependency versions and commit the npm lockfile for reproducible installs.
+- Preserve upstream game credits and CC BY-NC-SA 4.0 licensing. The font files
+  retain their separate CC BY 3.0 and SIL Open Font License notices.
+
+VALIDATION AND KNOWN LIMITATIONS
+- Regression tests cover localization, font selection, controller input,
+  remapping/focus/disconnect behavior, settings sliders, live audio mute/fades,
+  autoplay and the original title prompt.
+- Added desktop resource routing, archive rejection, cache integrity, window
+  input validation, version consistency and packaging checks.
+- Tested a complete import and reimport of the supplied original media ZIP.
+- Check the packaged application for code, catalogs, fonts and license notices,
+  and confirm images/sounds are excluded from the GitHub executable bundle.
+- The 15 additional language catalogs are AI-assisted drafts. Native-speaker
+  review remains pending; completeness checks do not establish linguistic
+  accuracy. Irish grammar, idioms, adult slang and caption flow need review.
+- Other text drawn inside artwork and recorded dialogue remain in the original
+  media. A font fallback does not imply every Unicode script is included.
+- Physical controller hardware testing is still needed on each target OS/device.
+- The Windows executable is unsigned. No code-signing certificate was supplied.
+- Windows desktop visual/manual gameplay testing is separate from automated
+  source, import and packaging validation.
+- Browser saves and desktop saves are separate because they use different
+  origins; future desktop versions reuse the same desktop saves.
+
+For setup, controls, development and future release instructions, see README.md.
+Full license: License.txt. Font notices: fonts/ (game/fonts/ in the workspace).

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Strange Flesh — localization review</title>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <style>
+    @font-face {font-family:alagard;src:url(images/alagard.ttf)}
+    * {box-sizing:border-box} body {margin:0;background:#160d18;color:#f5edf4;font-family:"Noto Sans",sans-serif}
+    main {max-width:1320px;margin:auto;padding:24px} h1 {font-size:26px} p {color:#c8b6c5;line-height:1.5}
+    label {display:block;margin:14px 0 6px} select {max-width:100%;padding:8px;background:#30202c;color:#fff;border:1px solid #a84c70;font:inherit}
+    .previews {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    canvas {display:block;width:100%;height:auto;background:#000;border:1px solid #493044}
+    @media(max-width:850px){.previews {grid-template-columns:1fr}}
+    #status {font-size:13px} a {color:#ee75ad}
+  </style>
+</head>
+<body><main>
+  <h1>Localization review</h1>
+  <p>Preview of the game's enemy-name renderer, boss announcement, and translated credit headings. This page does not change saved game settings.</p>
+  <label for="language">Language</label><select id="language"></select>
+  <label for="enemy">Enemy name</label><select id="enemy"></select>
+  <p id="status" role="status">Loading fonts…</p>
+  <div class="previews"><canvas id="names" width="640" height="360" aria-label="Enemy name and boss announcement preview"></canvas>
+  <canvas id="sound" width="640" height="360" aria-label="Sound credits preview"></canvas>
+  <canvas id="code" width="640" height="360" aria-label="Code credits preview"></canvas>
+  <canvas id="art" width="640" height="360" aria-label="Art credits preview"></canvas></div>
+  <p><a href="/">Return to the game</a></p>
+</main>
+<script>
+  var settings = {}, ctx, c, displayC, displayCtx;
+  var GlobalResourceLoader = {AddImageResource:function(){},AddSequentialImageResources:function(){},AddAudioResource:function(){}};
+</script>
+<script src="locales/pt-BR.js"></script><script src="Localization.js"></script><script src="locales/catalogs.js"></script>
+<script src="MathUtility.js"></script><script src="SupersampledTextRenderer.js"></script>
+<script src="Cutscene.js"></script><script src="EnemyInfo.js"></script>
+<script>
+  var languageSelect = document.getElementById('language');
+  Localization.languages.forEach(function(code,index){languageSelect.add(new Option(Localization.names[index],code));});
+  languageSelect.value = 'pt-BR';
+  var enemySelect = document.getElementById('enemy');
+  ['Neutral Joe','Disinterested Joe','Overworked Joe','Corrupted Joe','Lust-Mad Joe','Admonitor','Farther Figure','Punk Puppy','Mailbox'].forEach(function(name){enemySelect.add(new Option(name,name));});
+  enemySelect.value = 'Overworked Joe';
+  var images = ['credits1_name.png','credits2_name.png','credits3_name.png'].map(function(file){
+    var image = new Image(); image.src='images/menus/'+file; return image;
+  });
+  var imagesReady = Promise.all(images.map(function(image){return image.decode();}));
+  var revision = 0;
+  function useCanvas(id) {
+    c = displayC = document.getElementById(id); c.lang = Localization.language;
+    ctx = displayCtx = c.getContext('2d'); ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha=1;
+    ctx.clearRect(0,0,640,360);
+  }
+  // The preview enemy has one health bar, whose base color is the game's pink.
+  function mixColor(){return '#FF0169';}
+  async function render() {
+    var current = ++revision;
+    Localization.setLanguage(languageSelect.value,false);
+    await imagesReady;
+    await document.fonts.load('36px '+Localization.font('alagard'),localize('Innermost Desires')+localize(enemySelect.value)+localize('Sound'));
+    if(current!==revision)return;
+    useCanvas('names');
+    var info = new EnemyInfo(); info.enemy={displayName:enemySelect.value,corrupted:false,recruited:false}; info.health=185;
+    info.Draw(); sstext.BlitAndClear();
+    ctx.setTransform(1,0,0,1,0,0); sstext.fontSize=30; sstext.textAlign='center'; sstext.textBaseline='middle';sstext.alpha=1;
+    sstext.DrawTextWithShadow('Innermost Desires',320,180); sstext.DrawTextWithShadow('J O E',320,213); sstext.BlitAndClear();
+    ['sound','code','art'].forEach(function(id,index){useCanvas(id);ctx.drawImage(images[index],0,0);drawLocalizedCreditHeading(['Sound','Code','Art'][index]);sstext.BlitAndClear();});
+    document.getElementById('status').textContent=Localization.names[Localization.languages.indexOf(Localization.language)]+' — fonts and translated previews loaded.';
+  }
+  languageSelect.addEventListener('change',render); enemySelect.addEventListener('change',render);
+  render().catch(function(error){document.getElementById('status').textContent='Preview failed: '+error.message;});
+</script>
+</body></html>

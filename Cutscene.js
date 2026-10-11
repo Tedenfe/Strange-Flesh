@@ -120,7 +120,8 @@ Cutscene.prototype.AddSingleLineScreens = function(frameName, layerNames, x, y, 
 };
 
 Cutscene.prototype.Show = function()
-{	
+{
+    Localization.localizeCutscene(this);
 	this.close = false;
 	this.closing = false;
 	cutsceneToLevelTransition = null;
@@ -164,6 +165,12 @@ Cutscene.prototype.DrawScreen = function(screen)
 			sstext.fontSize = line.size;
 		else
 			sstext.fontSize = 28;
+
+        // Keep translated captions inside their original left/right/center margins.
+        var availableWidth = line.justify === "right" ? line.x - 20 :
+            line.justify === "center" ? 2 * Math.min(line.x - 20, 620 - line.x) : 620 - line.x;
+        var fullWidth = sstext.MeasureText(line.text).width;
+        if (fullWidth > availableWidth && availableWidth > 0) sstext.fontSize = Math.max(12, Math.floor(sstext.fontSize * availableWidth / fullWidth));
 		
 		// If the line is right justify, calculate the text width
 		if (line.hasOwnProperty("justify") && line.justify === "right")
@@ -241,7 +248,7 @@ Cutscene.prototype.Draw = function()
 		//ctx.fillStyle = "#000";
 		//ctx.fillRect(1500, 0, 420, 80);
 		sstext.alpha=0.75+0.25*Math.cos(this.pulse);
-		sstext.DrawTextWithShadow("Press Enter to Skip...", 633, 16);
+		sstext.DrawTextWithShadow(controller.getSkipPrompt(), 633, 16);
 		//ctx.globalAlpha=1.0;
 	}
 	
@@ -252,12 +259,12 @@ Cutscene.prototype.Draw = function()
 		ctx.globalAlpha=0.75+0.25*Math.cos(this.pulse);
 		
 		// Draw the keycap
-		this.keyicon.DrawSprite(600,320,false);
+		this.keyicon_wide.DrawSprite(564,320,false);
 
 		sstext.textBaseline = 'middle';
 		sstext.textAlign = "center";
 		sstext.fontSize = 16;
-		sstext.DrawTextWithShadow(getStringFromKeyCode(settings.punchKeyCode), 617, 337);
+		sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
 		sstext.alpha=1.0;
 		ctx.globalAlpha = 1;
 	}
@@ -1549,6 +1556,19 @@ function ShowGameOverCutscene(screen)
 };
 
 
+// Credit role headings are baked into the artwork; replace just that text band.
+// Contributor names and the animated illustrations remain in the original frame.
+function drawLocalizedCreditHeading(heading, offsetX)
+{
+    if (Localization.language === "en") return;
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 226, 640, 49);
+    ctx.restore();
+    sstext.DrawText(heading, 320 + (offsetX || 0), 264, 36, "#FFF", 1, "center", "alphabetic");
+}
+
 function ShowCreditsCutscene()
 {	
 	var introOfficeAngel = new OfficeAngel();
@@ -1658,6 +1678,7 @@ function ShowCreditsCutscene()
 					 "frame": soundBackground,
 					 "autoAdvanceTimer":860,
 					 "lines": [],
+                     "onDraw": function() { drawLocalizedCreditHeading("Sound", -soundBackground.info.centerX); },
 					 "onUpdate": function()
 					 {
 					 	// If we aren't pulsing, pulse on the next intro or loop track beat
@@ -1696,6 +1717,7 @@ function ShowCreditsCutscene()
 					 "frame": codeBackground,
 					 "autoAdvanceTimer":860,
 					 "lines": [],
+                     "onDraw": function() { drawLocalizedCreditHeading("Code"); },
 					 "onUpdate": function()
 					 {
 					 	// If we aren't pulsing, pulse on the next intro or loop track beat
@@ -1733,6 +1755,7 @@ function ShowCreditsCutscene()
 					 "frame": artBackground,
 					 "autoAdvanceTimer":860,
 					 "lines": [],
+                     "onDraw": function() { drawLocalizedCreditHeading("Art"); },
 					 "onUpdate": function()
 					 {
 					 	artTimer++;
@@ -1847,6 +1870,19 @@ function ShowCreditsCutscene()
 	//cutscene.fadeInFrame = cloneCanvas1080p(displayC);
 	cutscene.fadeOutColor = "#000";
 	
+    cutscene.screens.splice(cutscene.screens.length - 1, 0, {
+        bgColor: "#000", fadeInTime: 0, fadeInTimer: 0, autoAdvanceTimer: 720,
+        onFirstShow: function() { cutscene.autoAdvance = true; },
+        lines: [
+            {x: 320, y: 65, text: "Font Credits", i: 0, size: 30, justify: "center", color: "#FFF"},
+            {x: 320, y: 115, text: "Alagard-12px-unicode by iosoftware", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 145, text: "CC BY 3.0", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 175, text: "fontstruct.com/fontstructions/show/1035837", i: 0, size: 16, justify: "center", color: "#FFF"},
+            {x: 320, y: 220, text: "Alagard by Hewett Tsoi", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 265, text: "Noto Sans / Noto Sans CJK", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 295, text: "Noto Project · SIL OFL 1.1", i: 0, size: 20, justify: "center", color: "#FFF"}
+        ]
+    });
 	cutscene.onClosing = function() 
 	{	
 		GlobalMusic.stop(4.0); 

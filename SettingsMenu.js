@@ -12,6 +12,12 @@
 var blurredBackgroundImage = null;
 var backgroundImage = null;
 
+// Translated labels and native language names must fit the two menu columns.
+function settingsTextSize(text, size, width) {
+    sstext.fontSize = size;
+    return Math.min(size, size * width / Math.max(1, sstext.MeasureText(text).width));
+}
+
 GlobalResourceLoader.AddAudioResource("menu_boop","sound/menu/menu_boop.mp3");
 GlobalResourceLoader.AddAudioResource("text_click","sound/menu/text_click.mp3");
 
@@ -37,6 +43,7 @@ function SettingsMenu()
 	
 	this.scroll = 0;
 	this.scrollTarget = 0;
+	this.sliderRegions = [];
 	
 	this.allowBackout = true;
 	
@@ -142,6 +149,7 @@ SettingsMenu.prototype.Draw = function()
 		
 		var xPosition = 320;
 		var yPosition = 0;
+		this.sliderRegions = [];
 		
 		ctx.save();
 		ctx.translate(0,this.scroll + 125);
@@ -180,17 +188,46 @@ SettingsMenu.prototype.Draw = function()
 						ctx.fillStyle = "#6c1732";
 					}
 				
-					sstext.fontSize = 26;
-					var textWidth = sstext.MeasureText(this.items[i].options[this.items[i].selected]).width;
+					var optionText = this.items[i].options[this.items[i].selected];
+                    var optionSize = settingsTextSize(optionText, 26, 282);
+                    var labelSize = settingsTextSize(this.items[i].label + ":", 26, 300);
+                    sstext.fontSize = optionSize;
+					var textWidth = sstext.MeasureText(optionText).width;
 					ctx.fillRect(xPosition + 13 - 6, yPosition - 17, textWidth + 13, 33);
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
 					sstext.textAlign = "right";
+					sstext.fontSize = labelSize;
 					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll+ 125);
 			
 					sstext.textAlign = "left";
-					sstext.DrawText(this.items[i].options[this.items[i].selected], xPosition+13, yPosition + this.scroll+ 125);
+					sstext.fontSize = optionSize;
+					sstext.DrawText(optionText, xPosition+13, yPosition + this.scroll+ 125);
+					yPosition += 33;
+				}
+				else if (this.items[i].element === "slider")
+				{
+                    var item = this.items[i];
+                    var sliderX = xPosition + 13;
+                    var sliderWidth = 220;
+                    var fraction = (item.value - item.min) / (item.max - item.min);
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = "#6c1732";
+                    ctx.fillRect(sliderX, yPosition - 3, sliderWidth, 6);
+                    ctx.fillStyle = i === this.selectedItem ? "#e03068" : "#a84c70";
+                    ctx.fillRect(sliderX, yPosition - 3, sliderWidth * fraction, 6);
+                    for (var tick = item.min; tick <= item.max; tick += item.step) {
+                        ctx.fillRect(sliderX + sliderWidth * (tick - item.min) / (item.max - item.min) - 1, yPosition - 6, 2, 12);
+                    }
+                    ctx.fillStyle = i === this.selectedItem ? "#FFFFFF" : "#c8b6c5";
+                    ctx.fillRect(sliderX + sliderWidth * fraction - 4, yPosition - 10, 8, 20);
+                    sstext.globalAlpha = alpha;
+                    sstext.fillStyle = "#FFFFFF";
+                    sstext.fontSize = settingsTextSize(item.label + ":", 26, 300);
+                    sstext.textAlign = "right";
+                    sstext.DrawText(item.label + ":", xPosition, yPosition + this.scroll + 125);
+                    this.sliderRegions.push({index: i, x: sliderX, y: yPosition + this.scroll + 125, width: sliderWidth});
 					yPosition += 33;
 				}
 				else if (this.items[i].element === "keybind")
@@ -216,21 +253,25 @@ SettingsMenu.prototype.Draw = function()
 				
 					sstext.fontSize = 12;
 				
-					var text = "[" + this.items[i].assignedKeyboardFunction.call(controller) + "] or " + this.items[i].assignedControllerFunction.call(controller);
+					var text = "[" + localize(this.items[i].assignedKeyboardFunction.call(controller)) + "] " + localize("or") + " " + this.items[i].assignedControllerFunction.call(controller);
 
 					if (controller.bindingKey && i === this.selectedItem)
 					{
 						text = " ? "
 					}
+					var bindingTextSize = Math.min(12, 12 * 284 / Math.max(1, sstext.MeasureText(text).width));
+                    sstext.fontSize = bindingTextSize;
 					var textWidth = sstext.MeasureText(text).width;
 					ctx.fillRect(xPosition + 14 - 7, yPosition - 8, textWidth + 14, 16);
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
 					sstext.textAlign = "right";
+                    sstext.fontSize = settingsTextSize(this.items[i].label + ":", 12, 300);
 					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll + 125);
 			
 					sstext.textAlign = "left";
+                    sstext.fontSize = bindingTextSize;
 					sstext.DrawText(text, xPosition+13, yPosition + this.scroll + 125);
 					yPosition += 17;
 				}
@@ -249,11 +290,13 @@ SettingsMenu.prototype.Draw = function()
 						if (this.items[i].hasOwnProperty("isBlockText") && this.items[i].isBlockText)
 						{
 							sstext.textAlign = "left";
+								sstext.fontSize = settingsTextSize(this.items[i].text, sstext.fontSize, 454);
 							sstext.DrawText(this.items[i].text, xPosition - 150, yPosition + this.scroll+ 125);
 						}
 						else
 						{
 							sstext.textAlign = "center";
+								sstext.fontSize = settingsTextSize(this.items[i].text, sstext.fontSize, 600);
 							sstext.DrawText(this.items[i].text, xPosition, yPosition + this.scroll+ 125);
 						}
 					}
@@ -283,6 +326,7 @@ SettingsMenu.prototype.Draw = function()
 				
 					sstext.fontSize = 26;
 				
+					sstext.fontSize = settingsTextSize(this.items[i].label, 26, 600);
 					var textWidth = sstext.MeasureText(this.items[i].label).width;
 				
 					ctx.fillRect(xPosition - textWidth / 2 - 7, yPosition - 13 - 3, textWidth + 13, 33);
@@ -319,7 +363,7 @@ SettingsMenu.prototype.Draw = function()
     	// Now draw the title
     	sstext.alpha = alpha;
     	sstext.textAlign = "center";
-		sstext.fontSize = 46;
+		sstext.fontSize = settingsTextSize(this.title, 46, 600);
 		sstext.fillStyle = "#FFFFFF";
 		sstext.DrawTextWithShadow(this.title, 320, 67);
 		
@@ -330,6 +374,7 @@ SettingsMenu.prototype.Draw = function()
 
 SettingsMenu.prototype.Update = function()
 {
+    if (controller.bindingKey) return;
 	if (!this.closing && this.timer > 20)
 	{
 		if (controller.upActivate())
@@ -358,7 +403,8 @@ SettingsMenu.prototype.Update = function()
 			this.activateSound.Play();
 		}
 	
-		if (controller.leftActivate())
+        var selectedSlider = this.items[this.selectedItem].element === "slider";
+		if (controller.leftActivate() || (selectedSlider && controller.left && controller.leftFramesSinceKeydown >= 20 && controller.leftFramesSinceKeydown % 5 === 0))
 		{
 			if (this.items[this.selectedItem].element === "multi")
 			{
@@ -369,9 +415,12 @@ SettingsMenu.prototype.Update = function()
 				
 				this.activateSound.Play();
 			}
+            else if (selectedSlider && this.SetSliderValue(this.selectedItem, this.items[this.selectedItem].value - this.items[this.selectedItem].step)) {
+                this.activateSound.Play();
+            }
 		}
 		
-		if (controller.rightActivate())
+		if (controller.rightActivate() || (selectedSlider && controller.right && controller.rightFramesSinceKeydown >= 20 && controller.rightFramesSinceKeydown % 5 === 0))
 		{
 			if (this.items[this.selectedItem].element === "multi")
 			{
@@ -382,6 +431,9 @@ SettingsMenu.prototype.Update = function()
 				
 				this.activateSound.Play();
 			}
+            else if (selectedSlider && this.SetSliderValue(this.selectedItem, this.items[this.selectedItem].value + this.items[this.selectedItem].step)) {
+                this.activateSound.Play();
+            }
 		}
 	
 		if (controller.startActivate() || controller.punchActivate())
@@ -687,65 +739,82 @@ if (settings.cutsceneEndingBoyfriend)
 	menu.Show();
 };
 
+SettingsMenu.prototype.SetSliderValue = function(index, value) {
+    var item = this.items[index];
+    if (!item || item.element !== "slider" || !Number.isFinite(value)) return false;
+    var next = Math.max(item.min, Math.min(item.max, item.min + Math.round((value - item.min) / item.step) * item.step));
+    if (next === item.value) return false;
+    item.value = next;
+    item.onChange();
+    return true;
+};
+
+function enableSettingsSliderInput(canvas) {
+    var dragging = null;
+    function point(event) {
+        var rect = canvas.getBoundingClientRect();
+        return {x: (event.clientX - rect.left) * 640 / rect.width, y: (event.clientY - rect.top) * 360 / rect.height};
+    }
+    function update(event) {
+        if (!dragging || dragging.menu !== menuStack[menuStack.length - 1] || dragging.menu.closing) return;
+        var position = point(event);
+        var region = dragging.region;
+        var item = dragging.menu.items[region.index];
+        dragging.menu.SetSliderValue(region.index, item.min + (position.x - region.x) / region.width * (item.max - item.min));
+        event.preventDefault();
+    }
+    canvas.addEventListener("pointerdown", function(event) {
+        if (event.button !== 0) return;
+        var menu = menuStack[menuStack.length - 1];
+        if (!(menu instanceof SettingsMenu) || menu.closing || menu.timer <= 20) return;
+        var position = point(event);
+        var region = menu.sliderRegions.find(function(region) {
+            return region.y >= 110 && region.y <= 340 && position.x >= region.x - 8 && position.x <= region.x + region.width + 8 && Math.abs(position.y - region.y) <= 16;
+        });
+        if (!region) return;
+        dragging = {menu: menu, region: region};
+        menu.selectedItem = region.index;
+        canvas.focus();
+        canvas.setPointerCapture(event.pointerId);
+        update(event);
+    });
+    canvas.addEventListener("pointermove", update);
+    function release(event) {
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        dragging = null;
+    }
+    canvas.addEventListener("pointerup", release);
+    canvas.addEventListener("pointercancel", release);
+    window.addEventListener("blur", function() { dragging = null; });
+}
+
+function volumeMenuItem(label, settingName, apply) {
+    var volume = Number(settings[settingName]);
+    if (!Number.isFinite(volume)) volume = 1;
+    return {element: "slider", label: label, min: 0, max: 10, step: 1,
+        value: Math.round(Math.max(0, Math.min(1, volume)) * 10),
+        onChange: function() {
+            settings[settingName] = this.value / 10;
+            apply(settings[settingName]);
+            saveSettings();
+        }
+    };
+}
+
 function ShowSettingsMenu(ingame)
 {
 	var menu = new SettingsMenu();
 	
 	
-	var musicLevelSelection = 0;
-	var sfxLevelSelection = 0;
 	var fullscreenSelection = 0;
-	
-	if (settings.musicLevelGameplay === 0)
-		musicLevelSelection = 2;
-	else if (settings.musicLevelGameplay <= 0.5)
-		musicLevelSelection = 1;
-
-	if (settings.baseSFXBoost === 0)
-		sfxLevelSelection = 2;
-	else if (settings.baseSFXBoost <= 0.5)
-		sfxLevelSelection = 1;
 		
 	if (settings.fullscreenMode)
 		fullscreenSelection = 1;
 
 	menu.title = "Settings";
-	menu.items = [	
-					{ "element":"multi", "label":"Music Volume", "options":["Full","Half","Mute"], "selected":musicLevelSelection, "onChange":function()
-						{ 
-							if (this.selected === 0)
-							{
-								settings.musicLevelGameplay = 1.0;
-							}
-							else if (this.selected === 1)
-							{
-								settings.musicLevelGameplay = 0.5;
-							}
-							else if (this.selected === 2)
-							{
-								settings.musicLevelGameplay = 0;
-							}
-							
-							// Set the music volume so this actually applies right away
-							GlobalMusic.setVolume(settings.musicLevelGameplay);
- 						}
- 					},
- 					{ "element":"multi", "label":"SFX Volume", "options":["Full","Half","Mute"], "selected":sfxLevelSelection, "onChange":function()
-						{ 
-							if (this.selected === 0)
-							{
-								settings.baseSFXBoost = 1;
-							}
-							else if (this.selected === 1)
-							{
-								settings.baseSFXBoost = 0.5;
-							}
-							else if (this.selected === 2)
-							{
-								settings.baseSFXBoost = 0;
-							}
- 						}
- 					},
+	menu.items = [languageMenuItem(),
+                    volumeMenuItem("Music Volume", "musicLevelGameplay", function(volume) { GlobalMusic.setVolume(volume); }),
+                    volumeMenuItem("SFX Volume", "baseSFXBoost", function(volume) { GlobalResourceLoader.SetSFXVolume(volume); }),
  					
  					{ "element":"spacer", "size":9},
  					
@@ -1131,7 +1200,14 @@ function ShowControlsMenu()
 	var menu = new SettingsMenu();
 	
 	menu.title = "Controls";
-	menu.items = [	
+	menu.items = [
+        {element: "multi", label: "Controller Layout", options: ["Automatic", "Xbox", "PlayStation", "Nintendo"],
+            selected: Math.max(0, ["auto", "xbox", "playstation", "nintendo"].indexOf(settings.gamepadLayout)),
+            onChange: function() { settings.gamepadLayout = ["auto", "xbox", "playstation", "nintendo"][this.selected]; saveSettings(); }},
+        {element: "multi", label: "Stick Deadzone", options: ["15%", "25%", "40%"],
+            selected: Math.max(0, [0.15, 0.25, 0.4].indexOf(settings.gamepadDeadzone)),
+            onChange: function() { settings.gamepadDeadzone = [0.15, 0.25, 0.4][this.selected]; saveSettings(); }},
+        {element: "spacer", size: 34, fontSize: 16, text: "Connect a controller and press a button."},
 					{ "element":"keybind", "label":"Move Up", "assignedKeyboardFunction":controller.getUpKeyName, "assignedControllerFunction":controller.getUpButtonName, "onClick":function()
 						{
 							controller.bindUpKey();
@@ -1196,7 +1272,7 @@ function ShowControlsMenu()
 							controller.resetBindings();
 						} 
 					},
-					{ "element":"spacer", "size":5, "text": "Note: Arrow keys and Enter cannot be reassigned."}
+					{ "element":"spacer", "size":5, "fontSize": 16, "text": "Note: Arrow keys and Enter cannot be reassigned."}
 				];
 	menu.Show();
 };

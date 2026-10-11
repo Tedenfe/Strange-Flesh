@@ -105,7 +105,7 @@ function MainMenu()
 					{ "element":"button", "label":"Exit", "onClick":function()
 						{ 
 							 saveSettings();
-							if (typeof(app)!=='undefined')
+							if (app)
 							{	
 								 
 								  app.quit()
@@ -268,7 +268,7 @@ MainMenu.prototype.Draw = function()
 	sstext.fillStyle = "#FFF";
 	sstext.alpha = 0.5;
 	
-	sstext.DrawText("v1.5", linearRemap(menuAnim,0,1,557,367), linearRemap(menuAnim,0,1,193,145), 16);
+	sstext.DrawText("v" + (typeof gameVersion === "string" ? gameVersion : "1.5.1"), linearRemap(menuAnim,0,1,557,367), linearRemap(menuAnim,0,1,193,145), 16);
 	
 	// And finally the press any key pulsing message
 	if (this.menuMode)
@@ -312,8 +312,9 @@ MainMenu.prototype.Draw = function()
 			}
     	}
 	}
-	else if (this.pulsedOnce)
+	else
 	{
+		// Keep the original prompt visible while waiting for the first music beat.
 		sstext.DrawText("Press Any Key", 566, 316, 20, "#FFF", 0.6 + 0.4 * normalizeValue(this.oneshotPulse, 0, 20), "right");
 	}
 	

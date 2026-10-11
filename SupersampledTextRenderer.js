@@ -32,6 +32,7 @@ function SupersampledTextRenderer()
 
 SupersampledTextRenderer.prototype.DrawText = function(text, x, y, fontSize, fillStyle, alpha, textAlign, textBaseline)
 {
+	text = localize(text);
 	this.isClear = false;
 	
 	if (typeof fontSize !== 'undefined')
@@ -47,7 +48,7 @@ SupersampledTextRenderer.prototype.DrawText = function(text, x, y, fontSize, fil
 	
 	this.context.globalAlpha = this.alpha;
 	this.context.textAlign = this.textAlign;
-	this.context.font = (this.fontSize*3) + "px " + this.font;
+	this.context.font = (this.fontSize*3) + "px " + Localization.font(this.font);
 	this.context.fillStyle = this.fillStyle;
 	this.context.textBaseline = this.textBaseline;
 	this.context.fillText(text,x*3,y*3);
@@ -70,7 +71,8 @@ SupersampledTextRenderer.prototype.DrawTextWithShadow = function(text, x, y, col
 
 SupersampledTextRenderer.prototype.MeasureText = function(measureString)
 {
-	this.context.font = (this.fontSize) + "px " + this.font;
+	measureString = localize(measureString);
+	this.context.font = (this.fontSize) + "px " + Localization.font(this.font);
 	return this.context.measureText(measureString);
 };
 

@@ -94,6 +94,9 @@ if (this.enabled)
     		ctx.fillRect(rightEdge-width-margin, topEdge - margin, (width+margin+margin) * normalizeValue(this.health % 205,0,205) ,height+margin);
     		
     		sstext.alpha =  1.0 * alpha;
+            // The name is translated at draw time, so changing language stays safe.
+            var nameWidth = sstext.MeasureText(this.enemy.displayName).width;
+            if (nameWidth > width / 3 - 12) sstext.fontSize *= (width / 3 - 12) / nameWidth;
 			sstext.DrawText(this.enemy.displayName,Math.floor((rightEdge - width / 2)/3),Math.floor((topEdge+height-15)/3));
 			
 			ctx.globalAlpha = 1.0;

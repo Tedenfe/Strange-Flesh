@@ -59,12 +59,12 @@ ModalMessage.prototype.Draw = function()
 			sstext.alpha=0.75+0.25*Math.cos(this.pulse);
 			ctx.globalAlpha=0.75+0.25*Math.cos(this.pulse);
 			// Draw the keycap
-			this.keyicon.DrawSprite(600,320,false);
+			this.keyicon_wide.DrawSprite(564,320,false);
 
 			sstext.textBaseline = 'middle';
 			sstext.textAlign = "center";
 			sstext.fontSize = 16;
-			sstext.DrawTextWithShadow(getStringFromKeyCode(settings.punchKeyCode), 617, 337);
+			sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
 			sstext.alpha=1.0;
 			ctx.globalAlpha = 1.0;
 		}

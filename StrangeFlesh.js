@@ -9,11 +9,21 @@
 // This sourcecode has not been minified or obfuscated in any way. Enjoy.
 //
 
-if (typeof(process) !== "undefined" && process.versions.electron)
+var app = null;
+var BrowserWindow = null;
+if (window.strangeFleshDesktop)
 {
-    app = require('@electron/remote').app;
-	BrowserWindow = require('@electron/remote').BrowserWindow;
+    var desktop = window.strangeFleshDesktop;
+    app = {quit: desktop.quit};
+    BrowserWindow = {getFocusedWindow: function() {
+        var bounds = desktop.getWindowBounds();
+        return {x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height,
+            setFullScreen: desktop.setFullscreen,
+            setPosition: function(x, y) { desktop.setWindowBounds({x: x, y: y}); },
+            setSize: function(width, height) { desktop.setWindowBounds({width: width, height: height}); }};
+    }};
 }
+var gameVersion = "1.5.1";
 
 // Some globals that our includes might want to use
 var levelcache = {};
@@ -140,6 +150,9 @@ function include(url)
 
 // Now use that function to include other files we want.
 // It's almost like using a non-shitty language!
+include("locales/pt-BR.js");
+include("Localization.js");
+include("locales/catalogs.js");
 include("Font.js");
 include("SupersampledTextRenderer.js");
 include("FileSaver.js");
@@ -158,6 +171,7 @@ include("MatrixTransformation2D.js");
 include("CanvasCamera.js");
 include("Controller.js");
 include("PlayerInputController.js");
+include("GamepadSupport.js");
 include("Combat.js");
 include("Animation.js");
 include("EffectAnimation.js");
@@ -196,6 +210,7 @@ include("Checkpoint.js");
 
 function StrangeFlesh() 
 {   
+	if (document.fonts) document.fonts.load('26px "Alagard Unicode"', 'Configurações');
 	// Load all the image resources our included objects want
 	GlobalResourceLoader.LoadAll();
 	
@@ -222,6 +237,7 @@ function StrangeFlesh()
 	// Setup the controller object to enhance keyboard input
 	controller = new PlayerInputController();
 	enableKeyInput();
+	enableSettingsSliderInput(displayC);
 
     // Load the settings
 	loadSettings();
@@ -450,6 +466,9 @@ function loadSettings()
 
 	settings = {
 						// Basic settings
+                        "language": "en",
+                        "gamepadLayout": "auto",
+                        "gamepadDeadzone": 0.25,
 						"renderMode": 0,
 						"scalingQuality": 0,
 						"enableRetina" : false,
@@ -497,11 +516,11 @@ function loadSettings()
 						"downButtonConfig":    [0, 13, 0],
 						"leftButtonConfig":    [0, 14, 0],
 						"rightButtonConfig":   [0, 15, 0],
-						"punchButtonConfig":   [0, 0, 0 ],
+						"punchButtonConfig":   [0, 2, 0 ],
 						"smokeButtonConfig":   [0, 1, 0 ],
-						"grabButtonConfig":    [0, 2, 0 ],
+						"grabButtonConfig":    [0, 3, 0 ],
 						"specialButtonConfig": [0, 4, 0 ],
-						"jumpButtonConfig":    [0, 3, 0 ],
+						"jumpButtonConfig":    [0, 0, 0 ],
 						"startButtonConfig":   [0, 9, 0 ] 
 					};
 	
@@ -509,7 +528,9 @@ function loadSettings()
 	
 	if (settingsString !== null)
 	{
-		var loadedSettings = JSON.parse(settingsString);
+		var loadedSettings;
+        try { loadedSettings = JSON.parse(settingsString) || {}; }
+        catch (error) { loadedSettings = {}; }
 		
 		// Iterate over all the properties in the loaded settings and set them
 		for (var property in loadedSettings) 
@@ -537,6 +558,8 @@ function loadSettings()
 		resizeCanvas(true);
 	}
 
+    GlobalResourceLoader.SetSFXVolume(settings.baseSFXBoost);
+    Localization.setLanguage(settings.language, false);
 };
 
 function useContinue()
@@ -1154,6 +1177,7 @@ function updateAll()
 	// if the global image loader isn't ready, don't update anything.
 	if (!GlobalResourceLoader.AllReady())
 	{
+        if (controller) controller.update();
 		updated = true;
 		return;
 	}
