@@ -39,17 +39,13 @@ async function render(){
  sstext.alpha=1;sstext.textBaseline='middle';
  if(['controls','settings','pause'].indexOf(viewSelect.value)!==-1){
  if(viewSelect.value==='settings')ShowSettingsMenu(true);else if(viewSelect.value==='pause')ShowPauseMenu();else ShowControlsMenu();
- var menu=menuStack[0];if(viewSelect.value==='controls')menu.items=menu.items.filter(function(item){return item.element==='keybind';});
+ var menu=menuStack[0];
  var selected=focusSelect.dataset.view===viewSelect.value?Number(focusSelect.value):0;
  focusSelect.replaceChildren();focusSelect.disabled=false;focusSelect.dataset.view=viewSelect.value;
  menu.items.forEach(function(item,index){if(item.element!=='spacer')focusSelect.add(new Option(localize(item.label),index));});focusSelect.value=String(selected);
  menu.selectedItem=selected;
  // Settle scrolling exactly as the real menu does, so the chosen row stays visible.
  menu.Draw();menu.scroll=menu.scrollTarget;ctx.fillStyle='#000';ctx.fillRect(0,0,640,360);sstext.Clear();menu.Draw();sstext.BlitAndClear();
- if(viewSelect.value==='controls'){
- sstext.alpha=1;sstext.fontSize=16;sstext.textAlign='right';sstext.textBaseline='alphabetic';sstext.DrawRunsWithShadow(ControllerGlyphs.skip(controller),633,322);
- displayCtx.fillStyle='#30202c';displayCtx.fillRect(565,328,68,28);sstext.textBaseline='middle';sstext.textAlign='center';sstext.DrawRunsWithShadow(ControllerGlyphs.confirm(controller),599,341);sstext.BlitAndClear();
- }
  }else{
  focusSelect.disabled=true;
  var messages={fullscreen:'Press Any Key to Go Fullscreen',gallery:'Cutscene gallery unlocked!',debug:'Debug mode unlocked!'};

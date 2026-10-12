@@ -1,5 +1,6 @@
 Source updates awaiting the next release:
 
+- Unified Controls layout with larger bindings, consistent typography and clean scrolling.
 - Even spacing between the audio and video settings.
 - Pulsing reddish glow on selected values and buttons; labels stay white.
 - Improved a Brazilian Portuguese caption in the domination ending.

@@ -168,12 +168,28 @@ SettingsMenu.prototype.Draw = function()
     	
     	sstext.textBaseline = 'middle';
 		
-		var xPosition = 320;
+		var layout = this.layout || {};
+		var xPosition = layout.x || 320;
+		var contentTop = layout.contentTop || 125;
+		var labelWidth = layout.labelWidth || 300;
+		var valueWidth = layout.valueWidth || 282;
+		var rowSize = layout.fontSize || 26;
+		var bindingSize = layout.fontSize || 12;
+		var scrollBottom = layout.scrollBottom || 166;
 		var yPosition = 0;
 		this.sliderRegions = [];
 		
 		ctx.save();
-		ctx.translate(0,this.scroll + 125);
+		sstext.context.save();
+		if (typeof layout.clipTop === "number") {
+			ctx.beginPath();
+			ctx.rect(0, layout.clipTop, 640, layout.clipBottom - layout.clipTop);
+			ctx.clip();
+			sstext.context.beginPath();
+			sstext.context.rect(0, layout.clipTop * 3, 1920, (layout.clipBottom - layout.clipTop) * 3);
+			sstext.context.clip();
+		}
+		ctx.translate(0,this.scroll + contentTop);
 		
 		sstext.alpha = alpha;
 		
@@ -185,9 +201,9 @@ SettingsMenu.prototype.Draw = function()
 				if (i === this.selectedItem)
 				{
 					// If the selected item is above the top of the screen, make it the top item
-					if (yPosition + this.scroll > 166)
+					if (yPosition + this.scroll > scrollBottom)
 					{
-						this.scrollTarget = 166-yPosition;
+						this.scrollTarget = scrollBottom-yPosition;
 					}
 					// If the selected item is below the bottom of the screen, make it the bottom item
 					if (yPosition + this.scroll < 0)
@@ -199,19 +215,19 @@ SettingsMenu.prototype.Draw = function()
 				if (this.items[i].element === "multi")
 				{
 					var optionText = this.items[i].options[this.items[i].selected];
-                    var optionSize = settingsTextSize(optionText, 26, 282);
-                    var labelSize = settingsTextSize(this.items[i].label + ":", 26, 300);
+                    var optionSize = settingsTextSize(optionText, rowSize, valueWidth);
+                    var labelSize = settingsTextSize(this.items[i].label + ":", rowSize, labelWidth);
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
 					sstext.textAlign = "right";
 					sstext.fontSize = labelSize;
-					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll+ 125);
+					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll + contentTop);
 			
 					sstext.textAlign = "left";
 					sstext.fontSize = optionSize;
-					this.DrawItemText(optionText, xPosition+13, yPosition + this.scroll+ 125, i, alpha);
-					yPosition += 33;
+					this.DrawItemText(optionText, xPosition+13, yPosition + this.scroll + contentTop, i, alpha);
+					yPosition += layout.rowHeight || 33;
 				}
 				else if (this.items[i].element === "slider")
 				{
@@ -238,15 +254,15 @@ SettingsMenu.prototype.Draw = function()
                     ctx.restore();
                     sstext.globalAlpha = alpha;
                     sstext.fillStyle = "#FFFFFF";
-                    sstext.fontSize = settingsTextSize(item.label + ":", 26, 300);
+                    sstext.fontSize = settingsTextSize(item.label + ":", rowSize, labelWidth);
                     sstext.textAlign = "right";
-                    sstext.DrawText(item.label + ":", xPosition, yPosition + this.scroll + 125);
-                    this.sliderRegions.push({index: i, x: sliderX, y: yPosition + this.scroll + 125, width: sliderWidth});
-					yPosition += 33;
+                    sstext.DrawText(item.label + ":", xPosition, yPosition + this.scroll + contentTop);
+                    this.sliderRegions.push({index: i, x: sliderX, y: yPosition + this.scroll + contentTop, width: sliderWidth});
+					yPosition += layout.rowHeight || 33;
 				}
 				else if (this.items[i].element === "keybind")
 				{
-					sstext.fontSize = 12;
+					sstext.fontSize = bindingSize;
 				
 					var text = "[" + localize(this.items[i].assignedKeyboardFunction.call(controller)) + "] " + localize("or") + " " + this.items[i].assignedControllerFunction.call(controller);
                     var bindingRuns = typeof ControllerGlyphs !== 'undefined' ? ControllerGlyphs.binding(controller, this.items[i]) : null;
@@ -256,19 +272,19 @@ SettingsMenu.prototype.Draw = function()
 						text = " ? "
                         bindingRuns = null;
 					}
-					var bindingTextSize = Math.min(12, 12 * 284 / Math.max(1, bindingRuns ? sstext.MeasureRuns(bindingRuns).width : sstext.MeasureText(text).width));
+					var bindingTextSize = Math.min(bindingSize, bindingSize * (layout.valueWidth || 284) / Math.max(1, bindingRuns ? sstext.MeasureRuns(bindingRuns).width : sstext.MeasureText(text).width));
                     sstext.fontSize = bindingTextSize;
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
 					sstext.textAlign = "right";
-                    sstext.fontSize = settingsTextSize(this.items[i].label + ":", 12, 300);
-					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll + 125);
+                    sstext.fontSize = settingsTextSize(this.items[i].label + ":", bindingSize, labelWidth);
+					sstext.DrawText(this.items[i].label + ":", xPosition, yPosition + this.scroll + contentTop);
 			
 					sstext.textAlign = "left";
                     sstext.fontSize = bindingTextSize;
-                    this.DrawItemText(text, xPosition+13, yPosition + this.scroll + 125, i, alpha, bindingRuns);
-					yPosition += 17;
+                    this.DrawItemText(text, xPosition+13, yPosition + this.scroll + contentTop, i, alpha, bindingRuns);
+					yPosition += layout.rowHeight || 17;
 				}
 				else if (this.items[i].element === "spacer")
 				{
@@ -286,13 +302,13 @@ SettingsMenu.prototype.Draw = function()
 						{
 							sstext.textAlign = "left";
 								sstext.fontSize = settingsTextSize(this.items[i].text, sstext.fontSize, 454);
-							sstext.DrawText(this.items[i].text, xPosition - 150, yPosition + this.scroll+ 125);
+							sstext.DrawText(this.items[i].text, xPosition - 150, yPosition + this.scroll + contentTop);
 						}
 						else
 						{
 							sstext.textAlign = "center";
 								sstext.fontSize = settingsTextSize(this.items[i].text, sstext.fontSize, 600);
-							sstext.DrawText(this.items[i].text, xPosition, yPosition + this.scroll+ 125);
+							sstext.DrawText(this.items[i].text, xPosition, yPosition + this.scroll + contentTop);
 						}
 					}
 				
@@ -303,20 +319,31 @@ SettingsMenu.prototype.Draw = function()
 				{	
 					sstext.fontSize = 26;
 				
-					sstext.fontSize = settingsTextSize(this.items[i].label, 26, 600);
+					sstext.fontSize = settingsTextSize(this.items[i].label, rowSize, 600);
 				
 					sstext.alpha = alpha;
 					sstext.textAlign = "center";
-					this.DrawItemText(this.items[i].label, xPosition, yPosition+this.scroll+125, i, alpha);
+					this.DrawItemText(this.items[i].label, layout.x ? 320 : xPosition, yPosition + this.scroll + contentTop, i, alpha);
 				
-					yPosition += 40;
+					yPosition += layout.rowHeight || 40;
 				}
 			}
     	}
     	
-    	blitInternalBuffer();
-    	
+		sstext.context.restore();
     	ctx.restore();
+        if (typeof layout.clipTop === "number") {
+            var trackHeight = layout.clipBottom - layout.clipTop;
+            var thumbHeight = Math.max(24, trackHeight * Math.min(1, trackHeight / yPosition));
+            var maxScroll = Math.max(1, yPosition - layout.rowHeight - scrollBottom);
+            var scrollFraction = Math.max(0, Math.min(1, -this.scroll / maxScroll));
+            ctx.fillStyle = "#FFFFFF";
+            ctx.globalAlpha = alpha * 0.12;
+            ctx.fillRect(629, layout.clipTop, 2, trackHeight);
+            ctx.globalAlpha = alpha * 0.55;
+            ctx.fillRect(629, layout.clipTop + scrollFraction * (trackHeight - thumbHeight), 2, thumbHeight);
+        }
+		blitInternalBuffer();
     	
     	// Draw some background stripes to make sure the title is always visible
     	
@@ -336,9 +363,17 @@ SettingsMenu.prototype.Draw = function()
     	// Now draw the title
     	sstext.alpha = alpha;
     	sstext.textAlign = "center";
-		sstext.fontSize = settingsTextSize(this.title, 46, 600);
+		sstext.fontSize = settingsTextSize(this.title, layout.titleSize || 46, 600);
 		sstext.fillStyle = "#FFFFFF";
-		sstext.DrawTextWithShadow(this.title, 320, 67);
+		sstext.DrawTextWithShadow(this.title, 320, layout.titleY || 67);
+        if (this.subtitle) {
+            sstext.fontSize = settingsTextSize(this.subtitle, 14, 600);
+            sstext.DrawText(this.subtitle, 320, 83, sstext.fontSize, "#b8b1bd");
+        }
+        if (this.footer) {
+            sstext.fontSize = settingsTextSize(this.footer, 12, 600);
+            sstext.DrawText(this.footer, 320, 342, sstext.fontSize, "#b8b1bd");
+        }
 		
 		ctx.globalAlpha=1.0;
     	
@@ -347,7 +382,13 @@ SettingsMenu.prototype.Draw = function()
 
 SettingsMenu.prototype.Update = function()
 {
-    if (controller.bindingKey) return;
+    if (controller.bindingKey) {
+        // Capture input without freezing the selected row outside the viewport.
+        this.scroll += (this.scrollTarget - this.scroll) / 5;
+        if (this.timer < 60 || this.closing) this.timer += 1;
+        this.pulse = normalizeAngle(this.pulse + 0.05);
+        return;
+    }
 	if (!this.closing && this.timer > 20)
 	{
 		if (controller.upActivate())
@@ -1170,6 +1211,10 @@ function ShowControlsMenu()
 	var menu = new SettingsMenu();
 	
 	menu.title = "Controls";
+    menu.layout = {fontSize: 20, rowHeight: 28, x: 270, labelWidth: 250, valueWidth: 330,
+        contentTop: 120, scrollBottom: 196, clipTop: 106, clipBottom: 332, titleSize: 36, titleY: 52};
+    menu.subtitle = "Connect a controller and press a button.";
+    menu.footer = "Note: Arrow keys and Enter cannot be reassigned.";
 	menu.items = [
         {element: "multi", label: "Controller Layout", options: ["Automatic", "Xbox", "PlayStation 4", "DualSense", "Nintendo"],
             selected: Math.max(0, ["auto", "xbox", "playstation", "dualsense", "nintendo"].indexOf(settings.gamepadLayout)),
@@ -1177,7 +1222,6 @@ function ShowControlsMenu()
         {element: "multi", label: "Stick Deadzone", options: ["15%", "25%", "40%"],
             selected: Math.max(0, [0.15, 0.25, 0.4].indexOf(settings.gamepadDeadzone)),
             onChange: function() { settings.gamepadDeadzone = [0.15, 0.25, 0.4][this.selected]; saveSettings(); }},
-        {element: "spacer", size: 34, fontSize: 16, text: "Connect a controller and press a button."},
 					{ "element":"keybind", "label":"Move Up", "assignedKeyboardFunction":controller.getUpKeyName, "assignedControllerFunction":controller.getUpButtonName, "onClick":function()
 						{
 							controller.bindUpKey();
@@ -1228,8 +1272,6 @@ function ShowControlsMenu()
 							controller.bindStartKey();
 						} 
 					},
-					{ "element":"spacer", "size":15},
-					
 					{ "element":"button", "label":"Done", "onClick":function()
 						{ 
 							menu.startCloseTime = menu.timer;
@@ -1242,7 +1284,6 @@ function ShowControlsMenu()
 							controller.resetBindings();
 						} 
 					},
-					{ "element":"spacer", "size":5, "fontSize": 16, "text": "Note: Arrow keys and Enter cannot be reassigned."}
 				];
 	menu.Show();
 };

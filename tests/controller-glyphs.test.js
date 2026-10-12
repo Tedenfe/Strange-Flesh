@@ -196,6 +196,35 @@ test('Controls offers PS4 and DualSense layouts and preserves existing saved fam
     }
 });
 
+test('rebinding keeps the selected Controls row visible without processing navigation or changing bindings', () => {
+    const {c,input} = harness();
+    c.controller = input;
+    c.GlobalResourceLoader.GetSound = () => ({Play() {}});
+    vm.runInContext(fs.readFileSync(path.join(game,'SettingsMenu.js'),'utf8'),c);
+    c.SettingsMenu.prototype.Show = function() { c.menuStack.push(this); };
+    c.ShowControlsMenu();
+    const menu = c.menuStack.at(-1);
+    menu.selectedItem = menu.items.findIndex(item => item.label === 'Select');
+    const row = menu.selectedItem * menu.layout.rowHeight;
+    menu.scrollTarget = menu.layout.scrollBottom - row;
+    menu.timer = 30;
+    input.bindingKey = true;
+    input.upKeyDown(); input.punchKeyDown();
+    const actions = ['up','down','left','right','punch','smoke','grab','special','jump','start'];
+    const before = JSON.stringify(actions.map(action => input[action + 'ButtonMonitor'].GetConfig()));
+    const selected = menu.selectedItem;
+    const pulse = menu.pulse;
+    for (let frame = 0; frame < 40; frame++) menu.Update();
+    const screenY = menu.layout.contentTop + row + menu.scroll;
+    assert.ok(screenY - menu.layout.fontSize / 2 >= menu.layout.clipTop);
+    assert.ok(screenY + menu.layout.fontSize / 2 <= menu.layout.clipBottom);
+    assert.equal(menu.timer,60,'The menu finishes fading in during input capture');
+    assert.notEqual(menu.pulse,pulse,'Selection feedback continues while waiting');
+    assert.equal(menu.selectedItem,selected,'Navigation is ignored during input capture');
+    assert.equal(input.bindingKey,true);
+    assert.equal(JSON.stringify(actions.map(action => input[action + 'ButtonMonitor'].GetConfig())),before);
+});
+
 test('cutscene icons follow device and remapped skip button, including readable analog skip controls', () => {
     const {c,input} = harness();
     assert.equal(c.ControllerGlyphs.confirm(input)[0].text,'a');

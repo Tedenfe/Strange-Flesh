@@ -5,6 +5,14 @@ Repository: https://github.com/Tedenfe/Strange-Flesh
 Original game: Greatest Bear Studios, 2017
 
 UNRELEASED CHANGES (2026-10-12)
+- Unified the Controls page with aligned columns and consistent 20px base
+  text for controller type, deadzone and bindings, replacing the tiny 12px
+  mapping text. Widened the binding column and increased row spacing.
+- Moved Controls help into a fixed header/footer and added a slim scrollbar.
+  Keep the selected binding visible while its scroll/fade animation settles,
+  including during input capture. Larger button icons stay aligned,
+  labels remain white, and selected values retain their reddish pulse.
+- Updated the controller preview to show the complete Controls menu.
 - Made Settings rows evenly spaced by removing the extra gap between SFX
   Volume and Video Mode.
 - Replaced red menu selection boxes with a soft, pulsing reddish glow on
