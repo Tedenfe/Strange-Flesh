@@ -13,6 +13,11 @@ for (const entry of ['StrangeFlesh.js', 'index.html', 'License.txt', 'locales/ca
     assert.ok(entries.includes(prefix + entry), 'Missing ' + entry);
 for (const entry of ['desktop/main.js', 'desktop/preload.js', 'desktop/setup.html', 'CHANGELOG.txt', 'package.json'])
     assert.ok(entries.includes(entry), 'Missing ' + entry);
+for (const variant of ['latin', 'zh-Hans', 'zh-Hant', 'ja', 'ko'])
+    assert.ok(entries.includes(prefix + 'fonts/fusion-bold-pixel/fusion-bold-pixel-proportional-' + variant + '-12px-square.ttf'), 'Missing Fusion ' + variant);
+assert.ok(entries.includes(prefix + 'fonts/fusion-bold-pixel/LICENSE-OFL.txt'), 'Missing Fusion license');
+for (const entry of ['ControllerGlyphs.js','fonts/pixel-controller/Xbox.ttf','fonts/pixel-controller/DualShockMod.ttf','fonts/pixel-controller/License.txt'])
+    assert.ok(entries.includes(prefix + entry), 'Missing controller font asset ' + entry);
 assert.equal(entries.some(entry => /^(game\/)?(images|sound)\//.test(entry)), false, 'Media must stay outside the release');
 assert.equal(entries.some(entry => /PixelifySans\.ttf$/.test(entry)), false, 'Retired font');
 const version = JSON.parse(asar.extractFile(file, 'package.json').toString()).version;

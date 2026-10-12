@@ -172,6 +172,7 @@ include("CanvasCamera.js");
 include("Controller.js");
 include("PlayerInputController.js");
 include("GamepadSupport.js");
+include("ControllerGlyphs.js");
 include("Combat.js");
 include("Animation.js");
 include("EffectAnimation.js");

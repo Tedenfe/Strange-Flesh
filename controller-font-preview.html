@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Controller font glyph review</title>
+<link rel="stylesheet" href="fonts/fonts.css"><style>
+body{background:#160d18;color:#fff;font-family:'Fusion Bold Pixel Latin',sans-serif;margin:30px}
+h1{font-size:24px}h2{font-size:18px}.glyphs{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+article{background:#30202c;padding:10px;text-align:center;border:1px solid #684559}.icon{font-size:48px;line-height:1.6;display:block}p{font-size:12px}
+</style></head><body><h1>Controller font glyph review</h1><p>Each icon is labeled with the literal character used by its font.</p>
+<h2>Xbox</h2><section id="xbox" class="glyphs"></section><h2>PlayStation</h2><section id="playstation" class="glyphs"></section>
+<p id="status">Loading controller fonts…</p><script>
+var characters='123456789<>ACDEQSWXZ[]{}abgmvxychopqrst';
+['xbox','playstation'].forEach(function(family){for(var char of '123456789<>ACDEQSWXZ[]{}'+(family==='xbox'?'abgmvxy':'chopqrstvx')){var card=document.createElement('article');var icon=document.createElement('span');icon.className='icon';icon.style.fontFamily=family==='xbox'?'Pixel Controller Xbox':'Pixel Controller PlayStation';icon.textContent=char;var label=document.createElement('p');label.textContent=char+' (U+'+char.codePointAt(0).toString(16).toUpperCase()+')';card.append(icon,label);document.getElementById(family).append(card);}});
+Promise.all([document.fonts.load('48px "Pixel Controller Xbox"',characters),document.fonts.load('48px "Pixel Controller PlayStation"',characters)]).then(function(){document.getElementById('status').textContent='Controller fonts loaded.';});
+</script></body></html>

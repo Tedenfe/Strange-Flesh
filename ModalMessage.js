@@ -64,7 +64,8 @@ ModalMessage.prototype.Draw = function()
 			sstext.textBaseline = 'middle';
 			sstext.textAlign = "center";
 			sstext.fontSize = 16;
-			sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
+            if (typeof ControllerGlyphs !== 'undefined') sstext.DrawRunsWithShadow(ControllerGlyphs.confirm(controller), 599, 337);
+            else sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
 			sstext.alpha=1.0;
 			ctx.globalAlpha = 1.0;
 		}

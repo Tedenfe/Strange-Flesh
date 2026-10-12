@@ -10,7 +10,7 @@ Names of contributors, font families, and license notices remain unchanged. Soun
 
 To edit a translation, change values in its JSON file while preserving the English keys and `{button}` placeholder. Run `python tools/build-locales.py` to validate the catalogs and rebuild `catalogs.js`, which the game loads locally after `Localization.js`. Packaging also rebuilds this bundle. JSON catalogs are the authoritative editable sources; no translation service is contacted by the game or builder.
 
-The bundled Alagard Unicode is the primary face for European languages, with Noto fallbacks. Chinese, Japanese, and Korean use Noto Sans CJK. Canvas language tags select localized CJK glyph forms. `python tools/check-font.py` checks every character shipped in the additional catalogs and native language names.
+The bundled Alagard Unicode is the primary face for European languages, with Fusion Bold Pixel as the first fallback. Chinese, Japanese and Korean use their regional Fusion faces. Noto remains a final fallback for unsupported future characters. `python tools/check-font.py` checks every current catalog and native language name against Alagard/Fusion coverage, without allowing Noto to conceal missing pixel-font glyphs.
 
 Open `http://127.0.0.1:8765/localization-preview.html` to review enemy-name fitting, the boss announcement, and the credit overlays in any language. It uses the game's text, enemy-name, and credit-heading renderers without changing saved game settings.
 

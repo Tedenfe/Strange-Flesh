@@ -1,8 +1,58 @@
-/* Bundled locally. Alagard Unicode: CC BY 3.0; Noto: SIL Open Font License.
-   See alagard-unicode/license.txt and accompanying Noto OFL files. */
+/* Bundled locally. Alagard Unicode: CC BY 3.0; Fusion and Noto: SIL OFL 1.1.
+   Noto is a final fallback for characters absent from the pixel fonts.
+   See alagard-unicode/license.txt, fusion-bold-pixel/LICENSE-OFL.txt and Noto notices. */
 @font-face {
     font-family: "Alagard Unicode";
     src: url("alagard-unicode/alagard-12px-unicode.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Fusion Bold Pixel Latin";
+    src: url("fusion-bold-pixel/fusion-bold-pixel-proportional-latin-12px-square.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Fusion Bold Pixel SC";
+    src: url("fusion-bold-pixel/fusion-bold-pixel-proportional-zh-Hans-12px-square.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Fusion Bold Pixel TC";
+    src: url("fusion-bold-pixel/fusion-bold-pixel-proportional-zh-Hant-12px-square.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Fusion Bold Pixel JP";
+    src: url("fusion-bold-pixel/fusion-bold-pixel-proportional-ja-12px-square.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Fusion Bold Pixel KR";
+    src: url("fusion-bold-pixel/fusion-bold-pixel-proportional-ko-12px-square.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Pixel Controller Xbox";
+    src: url("pixel-controller/Xbox.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: "Pixel Controller PlayStation";
+    src: url("pixel-controller/DualShockMod.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: block;

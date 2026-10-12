@@ -35,7 +35,6 @@ var PortugueseBrazil = {
     "CC BY 3.0": "CC BY 3.0",
     "fontstruct.com/fontstructions/show/1035837": "fontstruct.com/fontstructions/show/1035837",
     "Alagard by Hewett Tsoi": "Alagard por Hewett Tsoi",
-    "Noto Sans / Noto Sans CJK": "Noto Sans / Noto Sans CJK",
     "Noto Project · SIL OFL 1.1": "Noto Project · SIL OFL 1.1",
     "Back": "Voltar",
     "Music Volume": "Volume da música",
@@ -220,7 +219,7 @@ var PortugueseBrazil = {
     "they always found him.": "que sempre o encontrassem.",
     "The police would give": "A polícia acabaria",
     "up their search eventually.": "desistindo da busca.",
-    "They were running out of detectives.": "Os detetives estavam acabando.",
+    "They were running out of detectives.": "Eles estavam ficando sem detetives.",
     "The Bartender planted a seed": "O Barman plantou a semente",
     "of his perversion deep inside Joe": "da sua perversão dentro de Joe",
     "and let it take root.": "e deixou que criasse raízes.",
@@ -424,5 +423,6 @@ var PortugueseBrazil = {
     "J O E": "J O E",
     "Mailbox": "Caixa de correio",
     "Newspaper Box": "Caixa de jornais",
-    "parkbin": "Lixeira de parque"
+    "parkbin": "Lixeira de parque",
+    "Fusion Bold Pixel by TakWolf": "Fusion Bold Pixel por TakWolf"
 };

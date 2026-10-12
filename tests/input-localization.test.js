@@ -70,7 +70,7 @@ test('future locales can register a dictionary and use the multilingual font sta
     c.sstext = {canvas: {}};
     c.Localization.setLanguage('ja');
     assert.equal(c.sstext.canvas.lang, 'ja');
-    assert.match(c.Localization.font('alagard'), /Noto Sans CJK/);
+    assert.match(c.Localization.font('alagard'), /^"Fusion Bold Pixel JP",/);
     c.Localization.registerLanguage('ja', '日本語', {'Menu': 'メニュー'});
     assert.equal(c.Localization.languages.filter(code => code === 'ja').length, 1);
 });
@@ -167,6 +167,7 @@ test('a controller can consume one-shot callbacks once', () => {
 test('story captions and all menu labels have catalog coverage', () => {
     const {context: c} = harness(); const source = fs.readFileSync(path.join(game, 'Cutscene.js'), 'utf8');
     const properNames = new Set(['Aaron "HumDog" Scott', 'Majkol "Zaru" Robuschi', 'Donkey Punch', 'The Punk Puppy', 'Satan, Lord of Darkness', 'Fann', 'bearpad', 'Captaingerbear', 'Bellua']);
+    ['Pixel Art Controller Fonts','Spriteshift / azagaya','CC0 1.0','spriteshift.itch.io/pixelartcontrollerfonts'].forEach(value => properNames.add(value));
     const captions = [...source.matchAll(/(?:"text"|\btext)\s*:\s*("(?:[^"\\]|\\.)*")/g)].map(match => JSON.parse(match[1]));
     for (const match of source.matchAll(/\.AddSingleLineScreens\([\s\S]*?\);/g)) {
         for (const literal of match[0].matchAll(/"(?:[^"\\]|\\.)*"/g)) {

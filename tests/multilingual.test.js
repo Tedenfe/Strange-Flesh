@@ -62,16 +62,20 @@ test('completed story captions remain complete across every language and return 
     assert.equal(scene.screens[0].lines[0].text, 'Joe was happy.');
 });
 
-test('European languages retain Alagard and East Asian languages select the CJK face', () => {
+test('European languages retain Alagard and other scripts use regional Fusion Bold Pixel faces first', () => {
     const c = harness();
     for (const code of ['ga', 'it', 'de', 'fr', 'pl', 'ru', 'es', 'es-419', 'pt-PT', 'tr', 'uk']) {
         c.Localization.setLanguage(code);
         assert.match(c.Localization.font('alagard'), /^"Alagard Unicode",/, code);
+        assert.ok(c.Localization.font('alagard').indexOf('Fusion Bold Pixel Latin') < c.Localization.font('alagard').indexOf('Noto Sans'), code);
     }
-    for (const code of ['zh-Hans', 'zh-Hant', 'ja', 'ko']) {
+    for (const [code, face] of [['zh-Hans','SC'], ['zh-Hant','TC'], ['ja','JP'], ['ko','KR']]) {
         c.Localization.setLanguage(code);
-        assert.match(c.Localization.font('alagard'), /^"Noto Sans CJK",/, code);
+        assert.ok(c.Localization.font('alagard').startsWith('"Fusion Bold Pixel ' + face + '",'), code);
     }
+    c.Localization.registerLanguage('el', 'Ελληνικά', {});
+    c.Localization.setLanguage('el');
+    assert.match(c.Localization.font('alagard'), /^"Fusion Bold Pixel Latin",/);
 });
 
 test('menu fitting bounds long translated labels and preserves shorter labels at their original size', () => {

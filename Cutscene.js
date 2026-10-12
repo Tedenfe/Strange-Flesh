@@ -248,7 +248,8 @@ Cutscene.prototype.Draw = function()
 		//ctx.fillStyle = "#000";
 		//ctx.fillRect(1500, 0, 420, 80);
 		sstext.alpha=0.75+0.25*Math.cos(this.pulse);
-		sstext.DrawTextWithShadow(controller.getSkipPrompt(), 633, 16);
+        if (typeof ControllerGlyphs !== 'undefined') sstext.DrawRunsWithShadow(ControllerGlyphs.skip(controller), 633, 16);
+        else sstext.DrawTextWithShadow(controller.getSkipPrompt(), 633, 16);
 		//ctx.globalAlpha=1.0;
 	}
 	
@@ -264,7 +265,8 @@ Cutscene.prototype.Draw = function()
 		sstext.textBaseline = 'middle';
 		sstext.textAlign = "center";
 		sstext.fontSize = 16;
-		sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
+        if (typeof ControllerGlyphs !== 'undefined') sstext.DrawRunsWithShadow(ControllerGlyphs.confirm(controller), 599, 337);
+        else sstext.DrawTextWithShadow(controller.getConfirmPrompt(), 599, 337);
 		sstext.alpha=1.0;
 		ctx.globalAlpha = 1;
 	}
@@ -1879,8 +1881,19 @@ function ShowCreditsCutscene()
             {x: 320, y: 145, text: "CC BY 3.0", i: 0, size: 20, justify: "center", color: "#FFF"},
             {x: 320, y: 175, text: "fontstruct.com/fontstructions/show/1035837", i: 0, size: 16, justify: "center", color: "#FFF"},
             {x: 320, y: 220, text: "Alagard by Hewett Tsoi", i: 0, size: 20, justify: "center", color: "#FFF"},
-            {x: 320, y: 265, text: "Noto Sans / Noto Sans CJK", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 265, text: "Fusion Bold Pixel by TakWolf", i: 0, size: 20, justify: "center", color: "#FFF"},
             {x: 320, y: 295, text: "Noto Project · SIL OFL 1.1", i: 0, size: 20, justify: "center", color: "#FFF"}
+        ]
+    });
+    cutscene.screens.splice(cutscene.screens.length - 1, 0, {
+        bgColor: "#000", fadeInTime: 0, fadeInTimer: 0, autoAdvanceTimer: 480,
+        onFirstShow: function() { cutscene.autoAdvance = true; },
+        lines: [
+            {x: 320, y: 65, text: "Font Credits", i: 0, size: 30, justify: "center", color: "#FFF"},
+            {x: 320, y: 145, text: "Pixel Art Controller Fonts", i: 0, size: 24, justify: "center", color: "#FFF"},
+            {x: 320, y: 185, text: "Spriteshift / azagaya", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 225, text: "CC0 1.0", i: 0, size: 20, justify: "center", color: "#FFF"},
+            {x: 320, y: 265, text: "spriteshift.itch.io/pixelartcontrollerfonts", i: 0, size: 16, justify: "center", color: "#FFF"}
         ]
     });
 	cutscene.onClosing = function() 

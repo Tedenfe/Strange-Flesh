@@ -28,9 +28,12 @@ var Localization = {
         return value;
     },
     font: function(original) {
-        var fallback = '"Noto Sans", "Noto Sans CJK", sans-serif';
+        var fallback = '"Fusion Bold Pixel Latin", "Noto Sans", "Noto Sans CJK", sans-serif';
         if (this.language === "en") return original + ', "Alagard Unicode", ' + fallback;
-        if (/^(zh|ja|ko)(-|$)/.test(this.language)) return '"Noto Sans CJK", "Noto Sans", sans-serif';
+        if (/^zh-(Hant|TW|HK|MO)(-|$)/i.test(this.language)) return '"Fusion Bold Pixel TC", ' + fallback;
+        if (/^zh(-|$)/.test(this.language)) return '"Fusion Bold Pixel SC", ' + fallback;
+        if (/^ja(-|$)/.test(this.language)) return '"Fusion Bold Pixel JP", ' + fallback;
+        if (/^ko(-|$)/.test(this.language)) return '"Fusion Bold Pixel KR", ' + fallback;
         if (/^(pt|ga|it|de|fr|pl|ru|es|tr|uk)(-|$)/.test(this.language)) return '"Alagard Unicode", ' + fallback;
         return fallback;
     },

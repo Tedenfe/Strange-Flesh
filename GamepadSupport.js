@@ -177,22 +177,32 @@
 
     PlayerInputController.prototype.getGamepadFamily = function() {
         var preference = settings.gamepadLayout;
+        if (preference === "dualsense") return "playstation";
         if (preference === "xbox" || preference === "playstation" || preference === "nintendo") return preference;
         var id = this.activeGamepad ? this.activeGamepad.id : "";
-        if (/dualsense|dualshock|playstation|054c|sony/i.test(id)) return "playstation";
+        if (/dualsense|dualshock|playstation|054c|sony|\bps[45]\b/i.test(id)) return "playstation";
         if (/nintendo|switch|057e/i.test(id)) return "nintendo";
         return "xbox";
+    };
+
+    PlayerInputController.prototype.getPlayStationModel = function() {
+        if (settings.gamepadLayout === "dualsense") return "dualsense";
+        if (settings.gamepadLayout === "playstation") return "dualshock";
+        var id = this.activeGamepad ? this.activeGamepad.id : "";
+        // Sony's PS5/Edge USB IDs: drivers/hid/hid-ids.h in the Linux kernel.
+        var ps5Product = /054c/i.test(id) && /(?:^|[^0-9a-f])(?:0ce6|0df2)(?:[^0-9a-f]|$)/i.test(id);
+        return /dualsense|playstation\s*5|\bps5\b/i.test(id) || ps5Product ? "dualsense" : "dualshock";
     };
 
     PlayerInputController.prototype.gamepadButtonName = function(index) {
         var family = this.getGamepadFamily();
         var names = {
             xbox: ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "View", "Menu", "LS", "RS"],
-            playstation: ["×", "○", "□", "△", "L1", "R1", "L2", "R2", "Share", "Options", "L3", "R3"],
+            playstation: ["×", "○", "□", "△", "L1", "R1", "L2", "R2", this.getPlayStationModel() === "dualsense" ? "Create" : "Share", "Options", "L3", "R3"],
             nintendo: ["B", "A", "Y", "X", "L", "R", "ZL", "ZR", "−", "+", "LS", "RS"]
         };
-        if (index >= 12 && index <= 15) return localize("D-pad") + " " + localize(["Up", "Down", "Left", "Right"][index - 12]);
         if (this.activeGamepad && this.activeGamepad.mapping !== "standard") return localize("Button") + " " + index;
+        if (index >= 12 && index <= 15) return localize("D-pad") + " " + localize(["Up", "Down", "Left", "Right"][index - 12]);
         return names[family][index] || localize("Button") + " " + index;
     };
 
@@ -200,14 +210,15 @@
         return this.lastInputDevice === "gamepad" && this.activeGamepad ? this.gamepadButtonName(0) : getStringFromKeyCode(settings.punchKeyCode);
     };
     PlayerInputController.prototype.getSkipPrompt = function() {
-        var button = this.lastInputDevice === "gamepad" && this.activeGamepad ? this.gamepadButtonName(this.startButtonMonitor.index) : "Enter";
+        var button = this.lastInputDevice === "gamepad" && this.activeGamepad ? this.startButtonMonitor.getName() : "Enter";
         return localize("Press {button} to Skip...").replace("{button}", button);
     };
 
     GamepadButtonMonitor.prototype.getName = function() {
         if (this.buttonType === 0) {
             var result = this.controller.gamepadButtonName(this.index);
-            if (this.index >= 12 && this.index <= 15) result += " / " + localize("Left Stick");
+            var directionBinding = ['up','down','left','right'].some(function(action) { return this.controller[action + 'ButtonMonitor'] === this; }, this);
+            if (directionBinding && this.index >= 12 && this.index <= 15 && (!this.controller.activeGamepad || this.controller.activeGamepad.mapping === 'standard')) result += " / " + localize("Left Stick");
             return result;
         }
         return (this.buttonType === 1 ? "+" : "−") + localize("Axis") + " " + this.index;

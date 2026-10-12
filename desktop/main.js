@@ -45,6 +45,14 @@ else {
             if (privateResource.status !== 404) throw new Error('Private route exposed');
             const font = await net.fetch(origin + '/fonts/alagard-unicode/alagard-12px-unicode.ttf');
             if (!font.ok || (await font.arrayBuffer()).byteLength !== 134568) throw new Error('Font route failed');
+            for (const variant of ['latin', 'zh-Hans', 'zh-Hant', 'ja', 'ko']) {
+                const response = await net.fetch(origin + '/fonts/fusion-bold-pixel/fusion-bold-pixel-proportional-' + variant + '-12px-square.ttf');
+                if (!response.ok || (await response.arrayBuffer()).byteLength < 6000000) throw new Error('Fusion font route failed: ' + variant);
+            }
+            for (const file of ['Xbox.ttf', 'DualShockMod.ttf']) {
+                const response = await net.fetch(origin + '/fonts/pixel-controller/' + file);
+                if (!response.ok || (await response.arrayBuffer()).byteLength < 10000) throw new Error('Controller font route failed: ' + file);
+            }
             const report = {version: app.getVersion(), electron: process.versions.electron, sourceVerified: true,
                 gameRouteVerified: true, setupRouteVerified: true, fontRouteVerified: true, privateRouteBlocked: true,
                 mediaReady: await mediaReady(media), guiOpened: false};

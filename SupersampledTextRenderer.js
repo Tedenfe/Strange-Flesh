@@ -76,6 +76,52 @@ SupersampledTextRenderer.prototype.MeasureText = function(measureString)
 	return this.context.measureText(measureString);
 };
 
+SupersampledTextRenderer.prototype.MeasureRuns = function(runs, size)
+{
+    if (typeof size === 'undefined') size = this.fontSize;
+    var width = 0;
+    for (var i = 0; i < runs.length; i++) {
+        this.context.font = size * (runs[i].scale || 1) + 'px ' + (runs[i].font ? '"' + runs[i].font + '"' : Localization.font(this.font));
+        width += this.context.measureText(runs[i].font ? runs[i].text : localize(runs[i].text)).width;
+    }
+    return {width: width};
+};
+
+SupersampledTextRenderer.prototype.DrawRuns = function(runs, x, y, color)
+{
+    this.isClear = false;
+    var width = this.MeasureRuns(runs).width;
+    var cursor = x - (this.textAlign === 'right' ? width : this.textAlign === 'center' ? width / 2 : 0);
+    this.context.save();
+    this.context.textAlign = 'left';
+    this.context.textBaseline = this.textBaseline;
+    this.context.globalAlpha = this.alpha;
+    this.context.fillStyle = typeof color === 'undefined' ? this.fillStyle : color;
+    this.context.font = this.fontSize * 3 + 'px ' + Localization.font(this.font);
+    var textMetrics = this.context.measureText('M');
+    var textCenter = (textMetrics.actualBoundingBoxDescent - textMetrics.actualBoundingBoxAscent) / 2;
+    for (var i = 0; i < runs.length; i++) {
+        var run = runs[i];
+        var text = run.font ? run.text : localize(run.text);
+        var runSize = this.fontSize * (run.scale || 1);
+        this.context.font = runSize * 3 + 'px ' + (run.font ? '"' + run.font + '"' : Localization.font(this.font));
+        var metrics = this.context.measureText(text);
+        var iconCenter = (metrics.actualBoundingBoxDescent - metrics.actualBoundingBoxAscent) / 2;
+        // Align visible icon shapes to the text, regardless of font baseline metrics.
+        var offset = run.font && Number.isFinite(textCenter) && Number.isFinite(iconCenter) ? textCenter - iconCenter : 0;
+        this.context.fillText(text, cursor * 3, y * 3 + offset);
+        cursor += metrics.width / 3;
+    }
+    this.context.restore();
+};
+
+SupersampledTextRenderer.prototype.DrawRunsWithShadow = function(runs, x, y, color)
+{
+    if (typeof color === 'undefined') color = '#FFF';
+    this.DrawRuns(runs, x - 2, y + 2, color === '#000' || color === '#000000' ? '#FFF' : '#000');
+    this.DrawRuns(runs, x, y, color);
+};
+
 SupersampledTextRenderer.prototype.DrawTextWithOutline = function(text, x, y, color)
 {
 	if (typeof color === "undefined" )

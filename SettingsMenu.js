@@ -113,6 +113,27 @@ SettingsMenu.prototype.Show = function()
 	menuStack.push(this);
 }
 
+// Pulse the selected text like the title menu, with a soft reddish halo.
+SettingsMenu.prototype.DrawItemText = function(text, x, y, index, alpha, runs)
+{
+    var selected = index === this.selectedItem;
+    var item = this.items[index];
+    var enabled = !item.hasOwnProperty("enabled") || item.enabled === true;
+    var waiting = selected && item.element === "keybind" && controller.bindingKey;
+    sstext.alpha = alpha * (selected ? 0.8 + 0.2 * Math.cos(this.pulse) : 0.5);
+    sstext.fillStyle = enabled ? (selected ? (waiting ? "#f1cc73" : "#ff9bb8") : "#FFFFFF") : "#a59aa4";
+    sstext.context.save();
+    if (selected && enabled) {
+        sstext.context.shadowColor = waiting ? "#d99b2b" : "#e03068";
+        sstext.context.shadowBlur = 12;
+    }
+    if (runs) sstext.DrawRuns(runs, x, y);
+    else sstext.DrawText(text, x, y);
+    sstext.context.restore();
+    sstext.alpha = alpha;
+    sstext.fillStyle = "#FFFFFF";
+};
+
 SettingsMenu.prototype.Draw = function()
 {
 		// Basically draw over everything
@@ -154,7 +175,7 @@ SettingsMenu.prototype.Draw = function()
 		ctx.save();
 		ctx.translate(0,this.scroll + 125);
 		
-		sstext.globalAlpha = alpha;
+		sstext.alpha = alpha;
 		
 		if (alpha > 0)
 		{
@@ -177,23 +198,9 @@ SettingsMenu.prototype.Draw = function()
 			
 				if (this.items[i].element === "multi")
 				{
-					if ( i === this.selectedItem)
-					{
-						ctx.globalAlpha = alpha * 0.75+0.20*Math.cos(this.pulse);
-						ctx.fillStyle = "#e03068";
-					}
-					else
-					{
-						ctx.globalAlpha = alpha * 0.6;
-						ctx.fillStyle = "#6c1732";
-					}
-				
 					var optionText = this.items[i].options[this.items[i].selected];
                     var optionSize = settingsTextSize(optionText, 26, 282);
                     var labelSize = settingsTextSize(this.items[i].label + ":", 26, 300);
-                    sstext.fontSize = optionSize;
-					var textWidth = sstext.MeasureText(optionText).width;
-					ctx.fillRect(xPosition + 13 - 6, yPosition - 17, textWidth + 13, 33);
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
@@ -203,7 +210,7 @@ SettingsMenu.prototype.Draw = function()
 			
 					sstext.textAlign = "left";
 					sstext.fontSize = optionSize;
-					sstext.DrawText(optionText, xPosition+13, yPosition + this.scroll+ 125);
+					this.DrawItemText(optionText, xPosition+13, yPosition + this.scroll+ 125, i, alpha);
 					yPosition += 33;
 				}
 				else if (this.items[i].element === "slider")
@@ -212,16 +219,23 @@ SettingsMenu.prototype.Draw = function()
                     var sliderX = xPosition + 13;
                     var sliderWidth = 220;
                     var fraction = (item.value - item.min) / (item.max - item.min);
+                    ctx.save();
                     ctx.globalAlpha = alpha;
-                    ctx.fillStyle = "#6c1732";
+                    ctx.fillStyle = "#37323d";
                     ctx.fillRect(sliderX, yPosition - 3, sliderWidth, 6);
-                    ctx.fillStyle = i === this.selectedItem ? "#e03068" : "#a84c70";
+                    if (i === this.selectedItem) {
+                        ctx.globalAlpha = alpha * (0.8 + 0.2 * Math.cos(this.pulse));
+                        ctx.shadowColor = "#e03068";
+                        ctx.shadowBlur = 4 * ratioTo360p;
+                    }
+                    ctx.fillStyle = i === this.selectedItem ? "#ff9bb8" : "#8e8797";
                     ctx.fillRect(sliderX, yPosition - 3, sliderWidth * fraction, 6);
                     for (var tick = item.min; tick <= item.max; tick += item.step) {
                         ctx.fillRect(sliderX + sliderWidth * (tick - item.min) / (item.max - item.min) - 1, yPosition - 6, 2, 12);
                     }
-                    ctx.fillStyle = i === this.selectedItem ? "#FFFFFF" : "#c8b6c5";
+                    ctx.fillStyle = i === this.selectedItem ? "#ffe5ee" : "#c7c1cb";
                     ctx.fillRect(sliderX + sliderWidth * fraction - 4, yPosition - 10, 8, 20);
+                    ctx.restore();
                     sstext.globalAlpha = alpha;
                     sstext.fillStyle = "#FFFFFF";
                     sstext.fontSize = settingsTextSize(item.label + ":", 26, 300);
@@ -232,37 +246,18 @@ SettingsMenu.prototype.Draw = function()
 				}
 				else if (this.items[i].element === "keybind")
 				{
-					if ( i === this.selectedItem)
-					{
-						if (controller.bindingKey)
-						{
-							ctx.fillStyle = "#ffea00";
-						}
-						else
-						{
-							ctx.fillStyle = "#e03068";
-						}
-						ctx.globalAlpha = alpha * 0.75+0.20*Math.cos(this.pulse);
-					
-					}
-					else
-					{
-						ctx.globalAlpha = alpha * 0.6;
-						ctx.fillStyle = "#6c1732";
-					}
-				
 					sstext.fontSize = 12;
 				
 					var text = "[" + localize(this.items[i].assignedKeyboardFunction.call(controller)) + "] " + localize("or") + " " + this.items[i].assignedControllerFunction.call(controller);
+                    var bindingRuns = typeof ControllerGlyphs !== 'undefined' ? ControllerGlyphs.binding(controller, this.items[i]) : null;
 
 					if (controller.bindingKey && i === this.selectedItem)
 					{
 						text = " ? "
+                        bindingRuns = null;
 					}
-					var bindingTextSize = Math.min(12, 12 * 284 / Math.max(1, sstext.MeasureText(text).width));
+					var bindingTextSize = Math.min(12, 12 * 284 / Math.max(1, bindingRuns ? sstext.MeasureRuns(bindingRuns).width : sstext.MeasureText(text).width));
                     sstext.fontSize = bindingTextSize;
-					var textWidth = sstext.MeasureText(text).width;
-					ctx.fillRect(xPosition + 14 - 7, yPosition - 8, textWidth + 14, 16);
 				
 					sstext.globalAlpha = alpha;
 					sstext.fillStyle = "#FFFFFF";
@@ -272,7 +267,7 @@ SettingsMenu.prototype.Draw = function()
 			
 					sstext.textAlign = "left";
                     sstext.fontSize = bindingTextSize;
-					sstext.DrawText(text, xPosition+13, yPosition + this.scroll + 125);
+                    this.DrawItemText(text, xPosition+13, yPosition + this.scroll + 125, i, alpha, bindingRuns);
 					yPosition += 17;
 				}
 				else if (this.items[i].element === "spacer")
@@ -306,35 +301,13 @@ SettingsMenu.prototype.Draw = function()
 				}
 				else if (this.items[i].element === "button")
 				{	
-					if ( i === this.selectedItem)
-					{
-						ctx.globalAlpha = alpha * 0.75+0.20*Math.cos(this.pulse);
-						if (!this.items[i].hasOwnProperty("enabled")  || this.items[i].enabled === true)
-							ctx.fillStyle = "#e03068";
-						else
-							ctx.fillStyle = "#e0e0e0";
-					}
-					else
-					{
-						ctx.globalAlpha = alpha * 0.6;
-					
-						if (!this.items[i].hasOwnProperty("enabled")  || this.items[i].enabled === true)
-							ctx.fillStyle = "#6c1732";
-						else
-							ctx.fillStyle = "#6c6c6c";
-					}
-				
 					sstext.fontSize = 26;
 				
 					sstext.fontSize = settingsTextSize(this.items[i].label, 26, 600);
-					var textWidth = sstext.MeasureText(this.items[i].label).width;
-				
-					ctx.fillRect(xPosition - textWidth / 2 - 7, yPosition - 13 - 3, textWidth + 13, 33);
 				
 					sstext.alpha = alpha;
-					sstext.fillStyle = "#FFFFFF";
 					sstext.textAlign = "center";
-					sstext.DrawText(this.items[i].label, xPosition, yPosition+this.scroll+125);
+					this.DrawItemText(this.items[i].label, xPosition, yPosition+this.scroll+125, i, alpha);
 				
 					yPosition += 40;
 				}
@@ -1201,9 +1174,9 @@ function ShowControlsMenu()
 	
 	menu.title = "Controls";
 	menu.items = [
-        {element: "multi", label: "Controller Layout", options: ["Automatic", "Xbox", "PlayStation", "Nintendo"],
-            selected: Math.max(0, ["auto", "xbox", "playstation", "nintendo"].indexOf(settings.gamepadLayout)),
-            onChange: function() { settings.gamepadLayout = ["auto", "xbox", "playstation", "nintendo"][this.selected]; saveSettings(); }},
+        {element: "multi", label: "Controller Layout", options: ["Automatic", "Xbox", "PlayStation 4", "DualSense", "Nintendo"],
+            selected: Math.max(0, ["auto", "xbox", "playstation", "dualsense", "nintendo"].indexOf(settings.gamepadLayout)),
+            onChange: function() { settings.gamepadLayout = ["auto", "xbox", "playstation", "dualsense", "nintendo"][this.selected]; saveSettings(); }},
         {element: "multi", label: "Stick Deadzone", options: ["15%", "25%", "40%"],
             selected: Math.max(0, [0.15, 0.25, 0.4].indexOf(settings.gamepadDeadzone)),
             onChange: function() { settings.gamepadDeadzone = [0.15, 0.25, 0.4][this.selected]; saveSettings(); }},

@@ -9,3 +9,5 @@
 *.yml text eol=lf
 *.ttf binary
 *.otf binary
+# Preserve the controller pack's original license notice bytes.
+fonts/pixel-controller/License.txt binary

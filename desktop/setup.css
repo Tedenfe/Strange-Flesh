@@ -1,9 +1,9 @@
 @import url('../fonts/fonts.css');
 * {box-sizing:border-box}
-html,body {margin:0;min-height:100%;background:#100c0a;color:#ead8be;font-family:'Noto Sans','Noto Sans CJK',sans-serif}
+html,body {margin:0;min-height:100%;background:#100c0a;color:#ead8be;font-family:'Fusion Bold Pixel Latin','Noto Sans','Noto Sans CJK',sans-serif}
 body {display:grid;place-items:center;min-height:100vh;padding:40px}
 main {max-width:650px;text-align:center}
-h1 {font-family:'Alagard Unicode','Noto Sans',sans-serif;font-size:52px;color:#e2ac61;font-weight:normal}
+h1 {font-family:'Alagard Unicode','Fusion Bold Pixel Latin','Noto Sans',sans-serif;font-size:52px;color:#e2ac61;font-weight:normal}
 p {font-size:18px;line-height:1.6}
 button {font:inherit;font-size:20px;padding:14px 28px;border:2px solid #e2ac61;border-radius:4px;background:#3c291a;color:#fff;cursor:pointer;margin:20px}
 button:focus-visible {outline:3px solid #fff;outline-offset:5px}

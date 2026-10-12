@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Controller font preview</title><link rel="stylesheet" href="fonts/fonts.css"><style>
+@font-face{font-family:alagard;src:url(images/alagard.ttf)}
+body{margin:24px;background:#160d18;color:#f5edf4;font-family:'Fusion Bold Pixel Latin','Noto Sans',sans-serif}
+main{max-width:1100px;margin:auto}h1{font-size:24px}p{line-height:1.5}label{margin-right:12px}select{font:inherit;background:#30202c;color:white;padding:8px;border:1px solid #a84c70;margin:8px 16px 16px 0}
+canvas{display:block;width:100%;height:auto;background:#000;border:1px solid #493044;image-rendering:pixelated}a{color:#ee75ad}#status{font-size:12px}
+</style></head><body><main><h1>Controller font preview</h1><p>Actual Controls and notification renderers with simulated controller layouts. This preview does not change saved game settings.</p>
+<label for="layout">Controller layout</label><select id="layout"><option value="xbox">Xbox</option><option value="playstation">PlayStation 4</option><option value="dualsense">DualSense</option><option value="nintendo">Nintendo</option></select>
+<label for="language">Language</label><select id="language"></select>
+<label for="view">View</label><select id="view"><option value="controls">Controls</option><option value="settings">Settings</option><option value="pause">Pause menu</option><option value="fullscreen">Fullscreen confirmation</option><option value="gallery">Gallery unlock</option><option value="debug">Debug unlock</option></select>
+<label for="focus">Selected row</label><select id="focus"></select>
+<canvas id="preview" width="640" height="360" aria-label="Controller mapping and prompt preview"></canvas><p id="status" role="status">Loading fonts…</p>
+<p id="buttons" aria-label="Square and secondary button comparison"></p>
+<p><a href="font-preview.html">Language fonts</a> · <a href="controller-font-preview.html">All controller glyphs</a> · <a href="/">Return to the game</a></p></main>
+<script>
+var settings={gamepadLayout:'xbox',gamepadDeadzone:0.25,musicLevelGameplay:0.7,baseSFXBoost:0.7,renderMode:0,scalingQuality:0,upKeyCode:87,downKeyCode:83,leftKeyCode:65,rightKeyCode:68,punchKeyCode:74,smokeKeyCode:75,grabKeyCode:76,specialKeyCode:186,jumpKeyCode:32,startKeyCode:13};
+var enableDebug=false,devDebug=false;function PauseSuspendableSounds(){}
+var displayC=document.getElementById('preview'),displayCtx=displayC.getContext('2d');
+var c=document.createElement('canvas');c.width=640;c.height=360;var ctx=c.getContext('2d'),menuStack=[],controller;
+var keycap=new Image();keycap.src='images/menus/keyicon_wide.png';var keycapReady=keycap.decode();
+var GlobalResourceLoader={AddAudioResource:function(){},AddImageResource:function(){},GetSound:function(){return{Play:function(){}};},GetSprite:function(){return{DrawSprite:function(x,y){ctx.drawImage(keycap,x,y);}};}};
+function saveSettings(){} function blitInternalBuffer(){displayCtx.setTransform(1,0,0,1,0,0);displayCtx.globalAlpha=1;displayCtx.drawImage(c,0,0,640,360);sstext.BlitAndClear();}
+</script><script src="locales/pt-BR.js"></script><script src="Localization.js"></script><script src="locales/catalogs.js"></script>
+<script src="MathUtility.js"></script><script src="Controller.js"></script><script src="PlayerInputController.js"></script><script src="GamepadSupport.js"></script>
+<script src="SupersampledTextRenderer.js"></script><script src="ControllerGlyphs.js"></script><script src="SettingsMenu.js"></script><script src="ModalMessage.js"></script>
+<script>
+controller=new PlayerInputController();
+var languageSelect=document.getElementById('language'),layoutSelect=document.getElementById('layout'),viewSelect=document.getElementById('view'),focusSelect=document.getElementById('focus');
+Localization.languages.forEach(function(code,index){languageSelect.add(new Option(Localization.names[index],code));});
+var blank=document.createElement('canvas');blank.width=640;blank.height=360;
+SettingsMenu.prototype.Show=function(){this.timer=60;this.blurredBackgroundImage=blank;menuStack=[this];};
+var revision=0;
+async function render(){
+ var current=++revision;settings.gamepadLayout=layoutSelect.value;Localization.setLanguage(languageSelect.value,false);
+ controller.activeGamepad={id:layoutSelect.value,mapping:'standard'};controller.lastInputDevice='gamepad';
+ await Promise.all([keycapReady,ControllerGlyphs.loadFonts(),document.fonts.load('26px '+Localization.font('alagard'),localize('Controls')+localize('Move Up')+localize('Press Any Key to Go Fullscreen'))]);
+ if(current!==revision)return;
+ ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.fillStyle='#000';ctx.fillRect(0,0,640,360);displayCtx.clearRect(0,0,640,360);sstext.Clear();
+ sstext.alpha=1;sstext.textBaseline='middle';
+ if(['controls','settings','pause'].indexOf(viewSelect.value)!==-1){
+ if(viewSelect.value==='settings')ShowSettingsMenu(true);else if(viewSelect.value==='pause')ShowPauseMenu();else ShowControlsMenu();
+ var menu=menuStack[0];if(viewSelect.value==='controls')menu.items=menu.items.filter(function(item){return item.element==='keybind';});
+ var selected=focusSelect.dataset.view===viewSelect.value?Number(focusSelect.value):0;
+ focusSelect.replaceChildren();focusSelect.disabled=false;focusSelect.dataset.view=viewSelect.value;
+ menu.items.forEach(function(item,index){if(item.element!=='spacer')focusSelect.add(new Option(localize(item.label),index));});focusSelect.value=String(selected);
+ menu.selectedItem=selected;
+ // Settle scrolling exactly as the real menu does, so the chosen row stays visible.
+ menu.Draw();menu.scroll=menu.scrollTarget;ctx.fillStyle='#000';ctx.fillRect(0,0,640,360);sstext.Clear();menu.Draw();sstext.BlitAndClear();
+ if(viewSelect.value==='controls'){
+ sstext.alpha=1;sstext.fontSize=16;sstext.textAlign='right';sstext.textBaseline='alphabetic';sstext.DrawRunsWithShadow(ControllerGlyphs.skip(controller),633,322);
+ displayCtx.fillStyle='#30202c';displayCtx.fillRect(565,328,68,28);sstext.textBaseline='middle';sstext.textAlign='center';sstext.DrawRunsWithShadow(ControllerGlyphs.confirm(controller),599,341);sstext.BlitAndClear();
+ }
+ }else{
+ focusSelect.disabled=true;
+ var messages={fullscreen:'Press Any Key to Go Fullscreen',gallery:'Cutscene gallery unlocked!',debug:'Debug mode unlocked!'};
+ new ModalMessage(messages[viewSelect.value]).Draw();blitInternalBuffer();
+ }
+ document.getElementById('status').textContent=layoutSelect.options[layoutSelect.selectedIndex].text+' — controller icons and localized labels loaded.';
+ var comparison=document.getElementById('buttons');comparison.replaceChildren();
+ [2,8,9].forEach(function(index){var button=ControllerGlyphs.button(controller,index);var name=document.createElement('span');name.textContent=button.label||button.text;name.style.marginRight='8px';var icon=document.createElement('span');icon.textContent=button.text;if(button.font)icon.style.fontFamily=button.font;icon.style.fontSize='32px';icon.style.marginRight='24px';comparison.append(name,icon);});
+}
+layoutSelect.addEventListener('change',render);languageSelect.addEventListener('change',render);viewSelect.addEventListener('change',render);focusSelect.addEventListener('change',render);render().catch(function(error){document.getElementById('status').textContent='Preview failed: '+error.message;});
+</script></body></html>

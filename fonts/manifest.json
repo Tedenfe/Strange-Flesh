@@ -24,5 +24,91 @@
     "license": "SIL Open Font License 1.1",
     "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
     "bytes": 16437364
+  },
+  {
+    "file": "fusion-bold-pixel/fusion-bold-pixel-proportional-ja-12px-square.ttf",
+    "source": "https://fontpixel.com/downloads/fusion-bold-pixel-proportional-ja-12px-square.ttf",
+    "downloaded": "2026-10-12",
+    "license": "SIL Open Font License 1.1",
+    "author": "TakWolf",
+    "outlines": "FontPixel proportional square 12px",
+    "upstream": "https://github.com/pixel-font-studio/fusion-bold-pixel-font",
+    "sha256": "e018cd062f51693afa0358281a461e43d09a50ac8f7cb25f7d7b02da2f394f4b",
+    "bytes": 6121920
+  },
+  {
+    "file": "fusion-bold-pixel/fusion-bold-pixel-proportional-ko-12px-square.ttf",
+    "source": "https://fontpixel.com/downloads/fusion-bold-pixel-proportional-ko-12px-square.ttf",
+    "downloaded": "2026-10-12",
+    "license": "SIL Open Font License 1.1",
+    "author": "TakWolf",
+    "outlines": "FontPixel proportional square 12px",
+    "upstream": "https://github.com/pixel-font-studio/fusion-bold-pixel-font",
+    "sha256": "b650ac4f36b2d933324c69a5d0de74390e0f4d3476071b47c49c66885b36688a",
+    "bytes": 6127548
+  },
+  {
+    "file": "fusion-bold-pixel/fusion-bold-pixel-proportional-latin-12px-square.ttf",
+    "source": "https://fontpixel.com/downloads/fusion-bold-pixel-proportional-latin-12px-square.ttf",
+    "downloaded": "2026-10-12",
+    "license": "SIL Open Font License 1.1",
+    "author": "TakWolf",
+    "outlines": "FontPixel proportional square 12px",
+    "upstream": "https://github.com/pixel-font-studio/fusion-bold-pixel-font",
+    "sha256": "cc9af2994465a9e35c67599835f28d0b14678847309157fefe146d148805dc12",
+    "bytes": 6118768
+  },
+  {
+    "file": "fusion-bold-pixel/fusion-bold-pixel-proportional-zh-Hans-12px-square.ttf",
+    "source": "https://fontpixel.com/downloads/fusion-bold-pixel-proportional-zh-Hans-12px-square.ttf",
+    "downloaded": "2026-10-12",
+    "license": "SIL Open Font License 1.1",
+    "author": "TakWolf",
+    "outlines": "FontPixel proportional square 12px",
+    "upstream": "https://github.com/pixel-font-studio/fusion-bold-pixel-font",
+    "sha256": "84929506b7beaecf58b9ac36ef54c22d43c593bddff9c5620dcaeb51daeaf861",
+    "bytes": 6120396
+  },
+  {
+    "file": "fusion-bold-pixel/fusion-bold-pixel-proportional-zh-Hant-12px-square.ttf",
+    "source": "https://fontpixel.com/downloads/fusion-bold-pixel-proportional-zh-Hant-12px-square.ttf",
+    "downloaded": "2026-10-12",
+    "license": "SIL Open Font License 1.1",
+    "author": "TakWolf",
+    "outlines": "FontPixel proportional square 12px",
+    "upstream": "https://github.com/pixel-font-studio/fusion-bold-pixel-font",
+    "sha256": "e1d715898d1d23d732c73a463f7b8f4c704016536a9eeadb3604fd82e2772f7a",
+    "bytes": 6125988
+  },
+  {
+    "file": "pixel-controller/DualShock.ttf",
+    "source": "https://spriteshift.itch.io/pixelartcontrollerfonts",
+    "downloaded": "2026-10-12",
+    "license": "CC0 1.0 Universal",
+    "author": "Spriteshift / azagaya",
+    "provided_archive": "PixelArtControllerFonts.zip",
+    "sha256": "6864bab4d6bc1c8b0fd2c8f2371c841f6fb4453b0962222d1a49fff23f47d9f4",
+    "bytes": 12228
+  },
+  {
+    "file": "pixel-controller/Xbox.ttf",
+    "source": "https://spriteshift.itch.io/pixelartcontrollerfonts",
+    "downloaded": "2026-10-12",
+    "license": "CC0 1.0 Universal",
+    "author": "Spriteshift / azagaya",
+    "provided_archive": "PixelArtControllerFonts.zip",
+    "sha256": "8fcdc545ce91e22a3ca60b2a72a1441f22e159a0b6b9660f001d17666fa37729",
+    "bytes": 10704
+  },
+  {
+    "file": "pixel-controller/DualShockMod.ttf",
+    "source": "https://spriteshift.itch.io/pixelartcontrollerfonts",
+    "provided": "2026-10-12",
+    "license": "CC0 1.0 Universal (original font)",
+    "author": "Spriteshift / azagaya; modifications by Tedenfe",
+    "provided_file": "PixelArtControllerFonts/DualShockMod.ttf",
+    "modifications": "PS4 SH/OP and DualSense Create/Options button symbols",
+    "sha256": "b2f48b3fde123285051a2dbc5985db7db493d8828a564f76984fc461a1747dfd",
+    "bytes": 17488
   }
 ]

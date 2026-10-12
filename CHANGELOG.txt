@@ -1,8 +1,53 @@
 STRANGE FLESH - MULTILINGUAL EDITION
-Complete changelog for v1.5.1
-Release date: 2026-10-12
+Complete changelog: v1.5.1 and unreleased source updates
+Latest published release: v1.5.1 (2026-10-12)
 Repository: https://github.com/Tedenfe/Strange-Flesh
 Original game: Greatest Bear Studios, 2017
+
+UNRELEASED CHANGES (2026-10-12)
+- Replaced red menu selection boxes with a soft, pulsing reddish glow on
+  selected values, controller bindings, volume sliders and action buttons.
+  Option labels remain steady white. Dimmed inactive values like the main
+  menu and retained amber feedback while rebinding.
+- Improved the Brazilian Portuguese domination-ending caption to
+  "Eles estavam ficando sem detetives."
+- Added Fusion Bold Pixel as the first font for text/glyphs that do not use
+  Alagard, with separate Latin, Simplified Chinese, Traditional Chinese,
+  Japanese and Korean proportional square-pixel outline faces.
+- Retained original English Alagard and supplied European Alagard Unicode.
+- Kept Noto as a final fallback for unsupported future characters; verified
+  that every character in the current catalogs is covered by Alagard/Fusion.
+- Updated font previews, font credits, bundled OFL notices and checksums.
+- Added the CC0 Pixel Art Controller Fonts by Spriteshift and azagaya.
+- Render supported controller buttons as icons in Controls and cutscene
+  confirm/skip prompts, while keeping keyboard labels and translated text
+  in their normal language fonts.
+- Enlarged controller icons by 50% for readability, while keeping surrounding
+  text at its existing size and preserving spacing/alignment in mixed prompts.
+- Applied controller icons to shared notification dialogs, including the
+  fullscreen prompt and gallery/debug unlock notices. Keyboard and raw-device
+  labels stay readable, and automatic notices retain their existing behavior.
+- Match Xbox/PlayStation icons to the selected layout and remapped buttons.
+  Use compatible Nintendo face/shoulder/stick/D-pad icons, with readable
+  ZL/ZR and plus/minus labels where the pack has no matching icon.
+- Preserve readable text for raw devices, unknown buttons, analog-axis
+  bindings and controller fonts that have not loaded.
+- Corrected raw-device D-pad labeling and analog-axis skip prompt labels.
+- Fixed controller icon font loading in the actual game: wait for imported
+  stylesheets and reload faces reset by the original font loader. Verify
+  font availability before drawing icons and avoid duplicate load requests.
+- Incorporated Tedenfe's supplied DualShockMod.ttf without changing its bytes.
+  Corrected Square to use its own icon instead of the Share icon. PS4 uses
+  SH/Share and OP/Options; DualSense uses Create and Options symbols.
+- Added explicit PlayStation 4 and DualSense layouts and automatic detection
+  using controller names and Sony PS5/Edge IDs. Preserved existing saved
+  controller layouts and applied the selected symbols to remapped prompts.
+- Added controller glyph and menu previews, glyph-coverage checks, mixed-font
+  renderer tests, and packaging/runtime checks for the added fonts/notices.
+- Recorded these updates in source control. No new game release or version
+  tag was created; the published v1.5.1 downloads remain unchanged.
+
+V1.5.1 (2026-10-12)
 
 This release collects the changes made for the multilingual/controller edition
 on top of the fork's existing v1.5 game code. It does not change the game's story,

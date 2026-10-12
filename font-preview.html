@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="fonts/fonts.css">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; background: #160d18; color: #f5edf4; font-family: "Noto Sans", sans-serif; }
+    body { margin: 0; background: #160d18; color: #f5edf4; font-family: "Fusion Bold Pixel Latin", "Noto Sans", sans-serif; }
     main { max-width: 960px; padding: 44px 28px; margin: auto; }
     h1 { font-size: 32px; margin: 10px 0; }
     p { color: #c8b6c5; line-height: 1.6; }
@@ -15,8 +15,12 @@
     .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 26px 0; }
     article { border: 1px solid #493044; border-radius: 12px; padding: 20px; background: #231723; }
     h2 { color: #c8b6c5; font-size: 12px; font-weight: 400; margin: 0 0 14px; }
-    .sample { font-size: 24px; line-height: 1.5; font-family: "Noto Sans", "Noto Sans CJK", sans-serif; }
-    .pixel { font-family: "Alagard Unicode", "Noto Sans", sans-serif; }
+    .sample { font-size: 24px; line-height: 1.5; font-family: "Fusion Bold Pixel Latin", "Noto Sans", "Noto Sans CJK", sans-serif; }
+    .pixel { font-family: "Alagard Unicode", "Fusion Bold Pixel Latin", "Noto Sans", sans-serif; }
+    .sc { font-family: "Fusion Bold Pixel SC", "Fusion Bold Pixel Latin", "Noto Sans CJK", sans-serif; }
+    .tc { font-family: "Fusion Bold Pixel TC", "Fusion Bold Pixel Latin", "Noto Sans CJK", sans-serif; }
+    .jp { font-family: "Fusion Bold Pixel JP", "Fusion Bold Pixel Latin", "Noto Sans CJK", sans-serif; }
+    .kr { font-family: "Fusion Bold Pixel KR", "Fusion Bold Pixel Latin", "Noto Sans CJK", sans-serif; }
     #status { font-size: 13px; }
     a { color: #ee75ad; }
   </style>
@@ -24,27 +28,30 @@
 <body><main>
   <div class="tag">Strange Flesh · font library</div>
   <h1>Ready for more languages</h1>
-  <p>Bundled fonts cover the scripts below. New translations can use them offline.</p>
+  <p>Alagard for European game text; Fusion Bold Pixel for other scripts and fallback glyphs. All fonts work offline.</p>
   <div class="samples">
     <article><h2>Português (Brasil) · Alagard Unicode</h2><div lang="pt-BR" class="sample pixel">Configurações · ação · coração<br>Á À Â Ã É Ê Í Ó Ô Õ Ú Ç<br>á à â ã é ê í ó ô õ ú ç</div></article>
-    <article><h2>Italiano · Noto Sans</h2><div lang="it" class="sample">Italiano · caffè · più · città</div></article>
-    <article><h2>Français · Noto Sans</h2><div lang="fr" class="sample">Français · cœur · été · garçon</div></article>
-    <article><h2>Ελληνικά · Noto Sans</h2><div lang="el" class="sample">Ελληνικά · Καλημέρα κόσμε</div></article>
-    <article><h2>Русский · Noto Sans</h2><div lang="ru" class="sample">Русский · Привет, мир</div></article>
-    <article><h2>中文 · Noto Sans CJK</h2><div lang="zh-Hans" class="sample">简体中文 · 游戏菜单</div><div lang="zh-Hant" class="sample">繁體中文 · 遊戲選單</div></article>
-    <article><h2>日本語 · Noto Sans CJK</h2><div lang="ja" class="sample">日本語 · ひらがな · カタカナ</div></article>
-    <article><h2>한국어 · Noto Sans CJK</h2><div lang="ko" class="sample">한국어 · 한글 · 게임 메뉴</div></article>
+    <article><h2>Italiano · Alagard Unicode</h2><div lang="it" class="sample pixel">Italiano · caffè · più · città</div></article>
+    <article><h2>Français · Alagard Unicode</h2><div lang="fr" class="sample pixel">Français · cœur · été · garçon</div></article>
+    <article><h2>Ελληνικά · Fusion Bold Pixel</h2><div lang="el" class="sample">Ελληνικά · Καλημέρα κόσμε</div></article>
+    <article><h2>Русский · Alagard + Fusion fallback</h2><div lang="ru" class="sample pixel">Русский · Привет, мир</div></article>
+    <article><h2>中文 · Fusion Bold Pixel SC / TC</h2><div lang="zh-Hans" class="sample sc">简体中文 · 游戏菜单</div><div lang="zh-Hant" class="sample tc">繁體中文 · 遊戲選單</div></article>
+    <article><h2>日本語 · Fusion Bold Pixel JP</h2><div lang="ja" class="sample jp">日本語 · ひらがな · カタカナ</div></article>
+    <article><h2>한국어 · Fusion Bold Pixel KR</h2><div lang="ko" class="sample kr">한국어 · 한글 · 게임 메뉴</div></article>
   </div>
   <p id="status" role="status">Loading bundled fonts…</p>
   <p><a href="/">Return to the game</a></p>
   <script>
     Promise.all([
       document.fonts.load('24px "Alagard Unicode"', 'ação'),
-      document.fonts.load('24px "Noto Sans"', 'Ελληνικά Русский'),
-      document.fonts.load('24px "Noto Sans CJK"', '中文 日本語 한국어')
+      document.fonts.load('24px "Fusion Bold Pixel Latin"', 'Ελληνικά Русский'),
+      document.fonts.load('24px "Fusion Bold Pixel SC"', '简体中文'),
+      document.fonts.load('24px "Fusion Bold Pixel TC"', '繁體中文'),
+      document.fonts.load('24px "Fusion Bold Pixel JP"', '日本語'),
+      document.fonts.load('24px "Fusion Bold Pixel KR"', '한국어')
     ]).then(function(fonts) {
       document.getElementById('status').textContent = fonts.every(function(group) { return group.length; }) ?
-        'All three bundled fonts loaded successfully.' : 'Some bundled fonts did not load.';
+        'Alagard and all five Fusion variants loaded successfully.' : 'Some bundled fonts did not load.';
     }).catch(function() { document.getElementById('status').textContent = 'A font could not load. Check the local font files.'; });
   </script>
 </main></body>

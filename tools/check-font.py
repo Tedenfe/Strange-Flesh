@@ -40,6 +40,15 @@ samples = {
     'NotoSans.ttf': 'Italiano Français Ελληνικά Ἑλληνική Русский Українська Tiếng Việt ×',
     'NotoSansCJK-Regular.otf': '简体中文 繁體中文 日本語 ひらがな カタカナ 한국어 한글 ○□△'
 }
+fusion_files = {code: 'fusion-bold-pixel/fusion-bold-pixel-proportional-' + variant + '-12px-square.ttf'
+                for code, variant in [('latin', 'latin'), ('zh-Hans', 'zh-Hans'), ('zh-Hant', 'zh-Hant'), ('ja', 'ja'), ('ko', 'ko')]}
+samples.update({filename: sample for filename, sample in [
+    (fusion_files['latin'], 'Italiano Français Ελληνικά Русский Українська ×○□△'),
+    (fusion_files['zh-Hans'], '简体中文 游戏菜单'), (fusion_files['zh-Hant'], '繁體中文 遊戲選單'),
+    (fusion_files['ja'], '日本語 ひらがな カタカナ'), (fusion_files['ko'], '한국어 한글 게임 메뉴')]})
+samples.update({'pixel-controller/Xbox.ttf': 'abxy[]{}<>mvWADX',
+                'pixel-controller/DualShock.ttf': 'xcst[]{}<>roWADX',
+                'pixel-controller/DualShockMod.ttf': 'xcst[]{}<>rpqoWADX'})
 catalog_source = (game / 'locales/pt-BR.js').read_text(encoding='utf-8')
 catalog = json.loads(catalog_source[catalog_source.index('{'):catalog_source.rindex('}')+1])
 samples['alagard-unicode/alagard-12px-unicode.ttf'] += ''.join({
@@ -59,7 +68,8 @@ for language in json.loads((locales / 'languages.json').read_text(encoding='utf-
     dictionary = json.loads((locales / (language['code'] + '.json')).read_text(encoding='utf-8'))
     characters = set(''.join(dictionary.values()) + language['name'])
     is_cjk = language['code'].startswith(('zh-', 'ja', 'ko'))
-    stack = ['NotoSansCJK-Regular.otf', 'NotoSans.ttf'] if is_cjk else list(readers)
+    # The current catalogs must work in pixel fonts, without reaching Noto.
+    stack = [fusion_files[language['code']], fusion_files['latin']] if is_cjk else ['alagard-unicode/alagard-12px-unicode.ttf', fusion_files['latin']]
     missing = sorted(char for char in characters if not char.isspace() and not any(readers[font](ord(char)) for font in stack))
     assert not missing, language['code'] + ': ' + ascii(missing)
     print(language['code'] + ': all translated characters covered by bundled fonts.')
