@@ -5,6 +5,8 @@ Repository: https://github.com/Tedenfe/Strange-Flesh
 Original game: Greatest Bear Studios, 2017
 
 UNRELEASED CHANGES (2026-10-12)
+- Made Settings rows evenly spaced by removing the extra gap between SFX
+  Volume and Video Mode.
 - Replaced red menu selection boxes with a soft, pulsing reddish glow on
   selected values, controller bindings, volume sliders and action buttons.
   Option labels remain steady white. Dimmed inactive values like the main

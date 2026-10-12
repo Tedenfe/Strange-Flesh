@@ -1,5 +1,6 @@
 Source updates awaiting the next release:
 
+- Even spacing between the audio and video settings.
 - Pulsing reddish glow on selected values and buttons; labels stay white.
 - Improved a Brazilian Portuguese caption in the domination ending.
 - **Fusion Bold Pixel** for non-Alagard text, with regional Chinese, Japanese

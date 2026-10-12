@@ -788,9 +788,6 @@ function ShowSettingsMenu(ingame)
 	menu.items = [languageMenuItem(),
                     volumeMenuItem("Music Volume", "musicLevelGameplay", function(volume) { GlobalMusic.setVolume(volume); }),
                     volumeMenuItem("SFX Volume", "baseSFXBoost", function(volume) { GlobalResourceLoader.SetSFXVolume(volume); }),
- 					
- 					{ "element":"spacer", "size":9},
- 					
 					{ "element":"multi", "label":"Video Mode", "options":["Window","Full Screen"], "selected":fullscreenSelection, "onChange":function()
 						{
 							settings.fullscreenMode = (this.selected === 1);
